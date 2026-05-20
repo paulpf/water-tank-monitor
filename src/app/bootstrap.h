@@ -5,6 +5,7 @@
 #include "wifimanager.h"
 #include "otamanager.h"
 #include "systemconfig.h"
+#include "levelsensor.h"
 
 class Bootstrap
 {
@@ -16,6 +17,7 @@ private:
   WifiManager _wifiManager;
   OtaManager _otaManager;
   SystemConfig _systemConfig;
+  LevelSensor _levelSensor;
   Application _app;
 };
 

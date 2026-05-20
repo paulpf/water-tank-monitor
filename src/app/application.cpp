@@ -1,5 +1,7 @@
 #include "application.h"
 #include "trace.h"
+#include "tanklevel.h"
+#include "config.h"
 
 // External secrets – located outside this project in ../_secrets/
 // Include path is set via build_flags in platformio.ini: -I ../_secrets
@@ -7,9 +9,10 @@
 #include "OtaSecret.h"
 
 Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
-                         SystemConfig &systemConfig)
+                         SystemConfig &systemConfig, ILevelSensor &levelSensor)
     : _wifiManager(wifiManager), _otaManager(otaManager),
-      _systemConfig(systemConfig), _lastStatusPrint(0), _startupWaitStart(0),
+      _systemConfig(systemConfig), _levelSensor(levelSensor),
+      _lastStatusPrint(0), _lastSensorRead(0), _startupWaitStart(0),
       _startupState(StartupState::WAITING_FOR_WIFI)
 {
 }
@@ -24,6 +27,15 @@ void Application::setup()
   // - The WifiManager keeps reconnect logic internally and continues in loop().
   // Credentials come from external secret headers to keep sensitive values
   // outside the repository.
+  if (!_levelSensor.setup())
+  {
+    Trace::log(TraceLevel::ERROR, "ADS1115 not found - check I2C wiring (D1=SCL, D2=SDA)");
+  }
+  else
+  {
+    Trace::log(TraceLevel::INFO, "ADS1115 ready");
+  }
+
   _wifiManager.setup(WIFI_SSID, WIFI_PWD, DEVICE_NAME);
   
   // Non-blocking startup marker:
@@ -65,6 +77,13 @@ void Application::loop()
     Trace::log(TraceLevel::WARNING, "WiFi disconnected event");
   }
 
+  // Read and log sensor level periodically
+  if (currentTime - _lastSensorRead >= SENSOR_READ_INTERVAL_MS)
+  {
+    _lastSensorRead = currentTime;
+    readAndLogLevel();
+  }
+
   // Print status periodically
   if (currentTime - _lastStatusPrint >= STATUS_PRINT_INTERVAL_MS)
   {
@@ -85,6 +104,22 @@ void Application::loop()
       Trace::log(TraceLevel::INFO, "WiFi disconnected");
     }
   }
+}
+
+void Application::readAndLogLevel()
+{
+  TankLevel level = _levelSensor.read();
+
+  if (!level.isValid())
+  {
+    Trace::log(TraceLevel::WARNING, "Sensor out of range - check wiring");
+    return;
+  }
+
+  char buf[64];
+  snprintf(buf, sizeof(buf), "Tank: %.1f%% (%.2f mA)",
+           level.levelPercent, level.currentMa);
+  Trace::log(TraceLevel::INFO, buf);
 }
 
 void Application::handleStartup()

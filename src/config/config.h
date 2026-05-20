@@ -29,7 +29,7 @@ constexpr uint16_t OTA_PORT = 3232;
 #define OTA_ALLOW_INSECURE_NO_PASSWORD false
 
 // Device identity
-#define DEVICE_NAME "esp8266-template"
+#define DEVICE_NAME "water-tank-monitor"
 
 // WiFi configuration
 constexpr int WIFI_CONNECTION_TIMEOUT = 10000; // milliseconds
@@ -43,5 +43,16 @@ constexpr uint32_t WIFI_RECONNECT_JITTER_MS = 500;
 
 // Application loop behavior
 constexpr uint32_t STATUS_PRINT_INTERVAL_MS = 30000;
+
+// TL-136 4-20mA level sensor via signal conditioner + ADS1115 (I2C, 16-bit ADC)
+// Hardware: USB 5V → Boost converter → 12V loop → TL-136 → 4-20mA receiver
+//           → ADS1115 A0 (I2C) → D1 Mini D1/SCL + D2/SDA
+// Signal conditioner calibrated: 4mA → 0V, 20mA → 3.3V (SPAN/ZERO trimmer)
+// ADS1115: ADDR pin to GND → I2C address 0x48
+//          GAIN_ONE = ±4.096V range → covers 0–3.3V with 0.125 mV resolution
+constexpr uint8_t  SENSOR_ADS_I2C_ADDR    = 0x48;
+constexpr uint8_t  SENSOR_ADS_CHANNEL     = 0;      // ADS1115 A0
+constexpr float    SENSOR_VREF            = 3.3f;   // signal conditioner max output [V]
+constexpr uint32_t SENSOR_READ_INTERVAL_MS = 5000;
 
 #endif // CONFIG_H

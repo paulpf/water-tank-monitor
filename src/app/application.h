@@ -4,12 +4,13 @@
 #include "wifimanager.h"
 #include "otamanager.h"
 #include "systemconfig.h"
+#include "ilevelsensor.h"
 
 class Application
 {
 public:
-  Application(WifiManager &wifiManager, OtaManager &otaManager, 
-              SystemConfig &systemConfig);
+  Application(WifiManager &wifiManager, OtaManager &otaManager,
+              SystemConfig &systemConfig, ILevelSensor &levelSensor);
 
   void setup();
   void loop();
@@ -22,11 +23,14 @@ private:
   };
 
   void handleStartup();
+  void readAndLogLevel();
 
   WifiManager &_wifiManager;
   OtaManager &_otaManager;
   SystemConfig &_systemConfig;
+  ILevelSensor &_levelSensor;
   unsigned long _lastStatusPrint;
+  unsigned long _lastSensorRead;
   unsigned long _startupWaitStart;
   StartupState _startupState;
 };

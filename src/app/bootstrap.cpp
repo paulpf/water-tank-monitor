@@ -1,8 +1,8 @@
 #include "bootstrap.h"
 
 Bootstrap::Bootstrap()
-    : _systemConfig(), 
-      _app(_wifiManager, _otaManager, _systemConfig)
+    : _systemConfig(),
+      _app(_wifiManager, _otaManager, _systemConfig, _levelSensor)
 {
 }
 
