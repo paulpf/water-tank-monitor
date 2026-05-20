@@ -41,26 +41,34 @@ WiFi-Konnektivität und OTA-Updates sind eingebaut.
 ### Schaltplan (ASCII)
 
 ```
-USB 5V ──── [Boost-Converter] ──── 12V ──── TL-136 (+) Braun
-                   │                              │
-                  GND                        [TL-136 Sensor]
-                   │ (gemeinsame              │
-                   │  GND-Schiene)       TL-136 (–) Blau
-                   │                              │
-                   └──────────── [4-20mA Empfänger] ─── I+/I–
-                                        │
-                               Vout (0–3,3 V)
-                                        │
-                               D1 Mini  A0
-                               D1 Mini  GND ──── GND-Schiene
-                               D1 Mini  5V  ──── USB 5V (direkt)
+              Micro-USB
+                  │
+            [D1 Mini]
+            │        │
+           5V        GND ──────────────────────────────┐
+            │                                          │
+            └──── [Boost-Converter] ── 12V ── TL-136(+)│
+                        │                       │      │
+                       GND             [TL-136 Sensor] │
+                        │                       │      │
+                        │               TL-136(–)Blau  │
+                        │                       │      │
+                        │           [4-20mA Empfänger] │
+                        │                  │    │      │
+                        │            Vout(0–3,3V)      │
+                        │                  │    GND ───┤
+                        │            [ADS1115]          │
+                        │            │    │    GND ───┤
+                        └────────────┘    │           │
+                          SCL/SDA     gemeinsame      │
+                         [D1 Mini D1/D2]  GND-Schiene ┘
 ```
 
 ### Klemmbelegung Schritt für Schritt
 
 | Schritt | Von | Nach | Beschreibung |
 |---|---|---|---|
-| 1 | USB 5V | Boost-Converter IN+ | Einspeisung Boost-Converter |
+| 1 | D1 Mini **5V-Pin** | Boost-Converter IN+ | 5V vom USB-VBUS (Polyfuse 500 mA, passt) |
 | 2 | Boost-Converter OUT+ (12 V) | TL-136 Braun (+) | Loop-Spannung |
 | 3 | TL-136 Blau (–) | Empfänger I+ | 4-20 mA Signal |
 | 4 | Empfänger I– | GND-Schiene | Loop-Rückleitung |
@@ -70,9 +78,10 @@ USB 5V ──── [Boost-Converter] ──── 12V ──── TL-136 (+) B
 | 8 | ADS1115 **VDD** | D1 Mini **3V3** | ADS1115 Versorgung |
 | 9 | ADS1115 **ADDR** | GND-Schiene | I²C-Adresse 0x48 |
 | 10 | D1 Mini **GND** | GND-Schiene | Gemeinsame Masse |
-| 11 | USB | D1 Mini 5V | ESP-Eigenversorgung |
+| 11 | USB-Kabel | D1 Mini (Micro-USB) | Einzige externe Stromquelle |
 
-> **GND-Schiene:** USB-GND, Boost-Converter-GND, Empfänger-GND und D1-Mini-GND müssen alle verbunden sein.
+> **GND-Schiene:** Boost-Converter-GND, Empfänger-GND, ADS1115-GND und D1-Mini-GND müssen alle verbunden sein.  
+> **Strombudget:** ESP8266 ~170 mA + Boost ~57 mA + Rest ~6 mA = ~230 mA gesamt — USB 2.0 (500 mA) hat ausreichend Reserve.
 
 ### Kalibrierung des Signalempfängers
 

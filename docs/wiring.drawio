@@ -13,13 +13,6 @@
 
     <!-- ═══════════════════════════════════════════════════════ COMPONENTS -->
 
-    <!-- USB 5V -->
-    <mxCell id="10" value="&lt;b&gt;USB 5 V&lt;/b&gt;&lt;br/&gt;(Laptop / Netzteil)"
-            style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontColor=#333333;fontSize=11;"
-            vertex="1" parent="1">
-      <mxGeometry x="30" y="250" width="130" height="60" as="geometry" />
-    </mxCell>
-
     <!-- Boost Converter -->
     <mxCell id="20" value="&lt;b&gt;Boost-Converter&lt;/b&gt;&lt;br/&gt;5 V → 12 V DC&lt;br/&gt;&lt;font style='font-size:10px'&gt;(Trimmer auf 12 V einstellen)&lt;/font&gt;"
             style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;"
@@ -74,23 +67,34 @@
             vertex="1" parent="1">
       <mxGeometry x="1122" y="368" width="140" height="22" as="geometry" />
     </mxCell>
-    <mxCell id="55" value="● 5V (USB)"
+    <mxCell id="55" value="● 5V → Boost-Conv."
             style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;fontSize=11;fontStyle=1;fontColor=#FF7700;"
             vertex="1" parent="1">
-      <mxGeometry x="1122" y="398" width="140" height="22" as="geometry" />
+      <mxGeometry x="1122" y="398" width="160" height="22" as="geometry" />
+    </mxCell>
+    <!-- Micro-USB Annotation -->
+    <mxCell id="56" value="← Micro-USB&lt;br/&gt;&lt;font style='font-size:10px'&gt;einzige Stromquelle&lt;/font&gt;"
+            style="text;html=1;strokeColor=#666666;fillColor=#f5f5f5;align=center;verticalAlign=middle;fontSize=11;rounded=1;"
+            vertex="1" parent="1">
+      <mxGeometry x="1122" y="158" width="160" height="38" as="geometry" />
     </mxCell>
 
     <!-- ═══════════════════════════════════════════════════════ WIRES -->
 
-    <!-- USB → Boost-Converter  [ROT] -->
+    <!-- D1 Mini 5V → Boost-Converter  [ORANGE, oben entlang] -->
     <mxCell id="60" value="5 V"
             style="edgeStyle=orthogonalEdgeStyle;html=1;
-                   exitX=1;exitY=0.5;exitDx=0;exitDy=0;
-                   entryX=0;entryY=0.5;entryDx=0;entryDy=0;
-                   strokeColor=#FF0000;strokeWidth=3;fontColor=#FF0000;fontSize=10;fontStyle=1;
+                   exitX=0;exitY=0.86;exitDx=0;exitDy=0;
+                   entryX=0.5;entryY=0;entryDx=0;entryDy=0;
+                   strokeColor=#FF7700;strokeWidth=3;fontColor=#FF7700;fontSize=10;fontStyle=1;
                    endArrow=open;endFill=0;"
-            edge="1" parent="1" source="10" target="20">
-      <mxGeometry relative="1" as="geometry" />
+            edge="1" parent="1" source="50" target="20">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1110" y="70" />
+          <mxPoint x="295" y="70" />
+        </Array>
+      </mxGeometry>
     </mxCell>
 
     <!-- Boost-Converter → TL-136 (+)  [ROT] -->
@@ -164,34 +168,18 @@
       </mxGeometry>
     </mxCell>
 
-    <!-- USB → D1 Mini 5V  [ROT gestrichelt] -->
-    <mxCell id="67" value="USB"
-            style="edgeStyle=orthogonalEdgeStyle;html=1;
-                   exitX=1;exitY=0.5;exitDx=0;exitDy=0;
-                   entryX=0;entryY=0.86;entryDx=0;entryDy=0;
-                   strokeColor=#FF7700;strokeWidth=2;dashed=1;fontColor=#FF7700;fontSize=10;
-                   endArrow=open;endFill=0;"
-            edge="1" parent="1" source="10" target="50">
-      <mxGeometry relative="1" as="geometry">
-        <Array as="points">
-          <mxPoint x="160" y="450" />
-          <mxPoint x="1110" y="450" />
-        </Array>
-      </mxGeometry>
-    </mxCell>
-
-    <!-- GND-Schiene: D1 Mini GND → USB GND  [SCHWARZ] -->
+    <!-- GND-Schiene: D1 Mini GND → Boost-Converter GND  [SCHWARZ] -->
     <mxCell id="68" value="GND"
             style="edgeStyle=orthogonalEdgeStyle;html=1;
                    exitX=0;exitY=0.63;exitDx=0;exitDy=0;
-                   entryX=0;entryY=0.75;entryDx=0;entryDy=0;
+                   entryX=0.5;entryY=1;entryDx=0;entryDy=0;
                    strokeColor=#1e1e1e;strokeWidth=3;fontColor=#1e1e1e;fontSize=10;fontStyle=1;
                    endArrow=open;endFill=0;"
-            edge="1" parent="1" source="50" target="10">
+            edge="1" parent="1" source="50" target="20">
       <mxGeometry relative="1" as="geometry">
         <Array as="points">
           <mxPoint x="1110" y="530" />
-          <mxPoint x="95" y="530" />
+          <mxPoint x="295" y="530" />
         </Array>
       </mxGeometry>
     </mxCell>
