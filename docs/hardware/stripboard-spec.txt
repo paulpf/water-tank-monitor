@@ -1,0 +1,175 @@
+====================================================================
+STRIPBOARD LAYOUT - Water Tank Monitor
+====================================================================
+Platine : 75 x 100 mm, Rastermaß 2,54 mm
+Raster  : 29 Spalten (A–AC) x 39 Reihen (1–39)
+Bahnen  : horizontal (100 mm Richtung), 39 Bahnen
+Löt-    : Unterseite (Bahnen sichtbar beim Löten)
+seite
+
+Koordinaten: Spalte 1 = links, Spalte 29 = rechts
+             Reihe  1 = oben,  Reihe  39 = unten
+
+====================================================================
+1. BAUTEIL-POSITIONEN
+====================================================================
+
+BAUTEIL          STIFTLEISTE       POSITION             PINS
+──────────────────────────────────────────────────────────────────
+D1 Mini          2x8 DIP-Stil      Links : Sp. 4, R.6-13
+                                   Rechts: Sp.11, R.6-13
+                                   (USB-Anschluss nach oben zeigen)
+
+ADS1115 Modul    1x10              Sp.15, R.6-15
+Boost-Converter  2x2               Sp.22/23, R.22-23 (IN)
+                                   Sp.22/23, R.25-26 (OUT)
+4-20mA Empf.     1x5               Sp.19, R.17-21
+Klemme Sensor    2-pol Schraubkl.  Sp.1-2, R.28-29
+Klemme 12V-Out   2-pol Schraubkl.  Sp.1-2, R.32-33
+
+====================================================================
+2. STIFTBELEGUNG D1 MINI (Sp.4 = links, Sp.11 = rechts)
+====================================================================
+
+Reihe  Sp.4 (links)   Sp.11 (rechts)   Hinweis
+──────────────────────────────────────────────────────────────────
+  6    RST             TX               TX ungenutzt
+  7    A0              RX               A0 u. RX ungenutzt
+  8    D0              D1/SCL           SCL → ADS1115
+  9    D5              D2/SDA           SDA → ADS1115
+ 10    D6              D3               ungenutzt
+ 11    D7              D4               ungenutzt
+ 12    D8              GND              GND → Masse-Bus
+ 13    3V3             5V               3V3/5V → Busse
+
+====================================================================
+3. STIFTBELEGUNG ADS1115 (Sp.15, R.6-15)
+====================================================================
+
+Reihe  Pin     Verbindung
+──────────────────────────────────────────────────────────────────
+  6    VDD     Jumper → 3V3-Bus (Sp.15, R.3)
+  7    GND     Jumper → GND-Bus (Sp.15, R.1)
+  8    SCL     Bahn direkt → D1 Mini D1/SCL (Sp.11, R.8) ← KEIN SCHNITT!
+  9    SDA     Bahn direkt → D1 Mini D2/SDA (Sp.11, R.9) ← KEIN SCHNITT!
+ 10    ADDR    Jumper → GND-Bus
+ 11    ALRT    frei (NC)
+ 12    A0      Jumper → 4-20mA Empf. VOUT (Sp.19, R.21)
+ 13    A1      frei (NC)
+ 14    A2      frei (NC)
+ 15    A3      frei (NC)
+
+====================================================================
+4. STIFTBELEGUNG 4-20mA EMPFÄNGER (Sp.19, R.17-21)
+====================================================================
+
+Reihe  Pin     Verbindung
+──────────────────────────────────────────────────────────────────
+ 17    VCC     Jumper → 5V-Bus (Sp.19, R.2)
+ 18    GND     Jumper → GND-Bus (Sp.19, R.1)
+ 19    I+      Bahn → Schraubklemme Sensor + (Sp.1, R.28)
+ 20    I-      Bahn → Schraubklemme Sensor - (Sp.1, R.29)
+ 21    VOUT    Jumper → ADS1115 A0 (Sp.15, R.12)
+
+====================================================================
+5. STIFTBELEGUNG BOOST-CONVERTER (Sp.22/23)
+====================================================================
+
+Reihe  Sp.22   Sp.23   Verbindung
+──────────────────────────────────────────────────────────────────
+ 22    IN+     IN-     Jumper 5V-Bus/GND-Bus
+ 25    OUT+    OUT-    Bahn → Schraubklemme 12V (Sp.1-2, R.32-33)
+
+====================================================================
+6. STROM-BUSSE (Power Rails)
+====================================================================
+
+Bus    Reihe   Bereich         Verbindungen
+──────────────────────────────────────────────────────────────────
+GND    R.1     Sp.1-29 (voll)  D1 GND, ADS GND, Empf. GND,
+                                Boost IN-, ADDR
+5V     R.2     Sp.1-29 (voll)  D1 5V, Empf. VCC, Boost IN+
+3V3    R.3     Sp.1-20         D1 3V3, ADS VDD
+
+====================================================================
+7. BAHNSCHNITTE (CUTS) — PFLICHTLISTE
+====================================================================
+
+Position              Grund
+──────────────────────────────────────────────────────────────────
+Sp. 7, R.6-13         D1 Mini: trennt linke von rechter Seite
+Sp.12, R.6            TX von ADS VDD trennen
+Sp.12, R.7            RX von ADS GND trennen
+Sp.12, R.10           D3 von ADS ADDR trennen
+Sp.12, R.11           D4 von ADS ALRT trennen
+Sp.12, R.12           GND (!) von ADS A0 trennen  ← KRITISCH!
+Sp.12, R.13           5V von ADS A1 trennen
+Sp.20, R.2            5V-Bus nicht bis Boost-Modul
+                       (Boost bekommt 5V über Jumper)
+
+Schnitte mit Bohrer Ø3mm oder Streifenschneider setzen.
+Anschließend mit Multimeter Durchgang prüfen!
+
+====================================================================
+8. BRÜCKENDRÄHTE (JUMPERS)
+====================================================================
+
+Von              Nach             Farbe    Länge ca.
+──────────────────────────────────────────────────────────────────
+(Sp.4,  R.13)   (Sp.4,  R.3)    orange   10 Reihen   3V3→Rail
+(Sp.11, R.13)   (Sp.11, R.2)    rot      11 Reihen   5V→Rail
+(Sp.11, R.12)   (Sp.11, R.1)    schwarz  11 Reihen   GND→Rail
+(Sp.15, R.6)    (Sp.15, R.3)    orange    3 Reihen   ADS VDD
+(Sp.15, R.7)    (Sp.15, R.1)    schwarz   6 Reihen   ADS GND
+(Sp.15, R.10)   (Sp.15, R.1)    schwarz   9 Reihen   ADS ADDR→GND
+(Sp.19, R.17)   (Sp.19, R.2)    rot      15 Reihen   RX VCC
+(Sp.19, R.18)   (Sp.19, R.1)    schwarz  17 Reihen   RX GND
+(Sp.19, R.21)   (Sp.15, R.12)   lila      diagonal   VOUT→A0
+(Sp.22, R.22)   (Sp.22, R.2)    rot      20 Reihen   Boost IN+
+(Sp.23, R.22)   (Sp.23, R.1)    schwarz  21 Reihen   Boost IN-
+(Sp.22, R.25)   (Sp.1,  R.32)   braun    ~diagonal   OUT+→Klemme
+(Sp.23, R.25)   (Sp.2,  R.32)   schwarz  ~diagonal   OUT-→Klemme
+(Sp.19, R.19)   (Sp.1,  R.28)   blau     ~diagonal   I+→Klemme
+(Sp.19, R.20)   (Sp.2,  R.29)   blau     ~diagonal   I-→Klemme
+
+====================================================================
+9. LÖTREIHENFOLGE (empfohlen)
+====================================================================
+
+1.  Bahnschnitte setzen und mit Multimeter prüfen
+2.  Kurze Brückendrähte (senkrecht, selbe Spalte) löten
+3.  Stiftleisten einstecken und löten (flach auf Platine):
+      a) D1 Mini 2x8 (sitzend, nicht liegend)
+      b) ADS1115 1x10
+      c) 4-20mA Empf. 1x5
+      d) Boost-Converter 2x4
+4.  Schraubklemmen löten
+5.  Lange Brückendrähte (diagonal/quer) löten
+6.  Module aufstecken
+7.  Gesamttest mit Multimeter vor dem ersten Einschalten:
+      - GND-Bus gegen 5V-Bus: kein Durchgang
+      - GND-Bus gegen 3V3-Bus: kein Durchgang
+      - D1 Mini 5V-Pin gegen 5V-Bus: Durchgang
+      - ADS1115 SCL gegen D1 Mini D1: Durchgang
+      - ADS1115 SDA gegen D1 Mini D2: Durchgang
+
+====================================================================
+10. BENÖTIGTE BAUTEILE (Einkaufsliste)
+====================================================================
+
+Stk.  Bauteil
+──────────────────────────────────────────────────────────────────
+  1   Wemos D1 Mini (ESP8266)
+  1   ADS1115 16-Bit ADC Modul
+  1   Boost-Converter Modul (z.B. MT3608)
+  1   4-20mA Strom-Empfänger Modul
+  1   Streifenrasterplatine 75x100mm (diese Platine)
+  2   Stiftleiste 1x10 (gerade, 2,54mm)
+  2   Stiftleiste 1x8  (für D1 Mini)
+  1   Stiftleiste 2x4  (für Boost-Converter)
+  2   Schraubklemme 2-polig, 5mm Raster
+  1   Kondensator 100µF / 16V (Puffer an 5V-Bus)
+  1   Kondensator 100nF (Puffer an 3V3-Bus)
+  ~30cm Schaltdraht (0,5mm²) verschiedene Farben
+
+====================================================================

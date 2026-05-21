@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="1075"
+     viewBox="0 0 850 1075" font-family="monospace" font-size="9">
+
+  <defs>
+    <!-- Hole pattern -->
+    <pattern id="holes" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse"
+             patternTransform="translate(40,40)">
+      <circle cx="12.5" cy="12.5" r="4.5" fill="#0d2b00" stroke="#1a4a00" stroke-width="0.8"/>
+    </pattern>
+    <!-- Grid pattern -->
+    <pattern id="grid" x="0" y="0" width="25" height="25" patternUnits="userSpaceOnUse"
+             patternTransform="translate(40,40)">
+      <path d="M 25 0 L 0 0 0 25" fill="none" stroke="#1a3a0a" stroke-width="0.3"/>
+    </pattern>
+  </defs>
+
+  <!-- Board background -->
+  <rect width="850" height="1075" fill="#1a1a2e"/>
+  <rect x="20" y="20" width="810" height="1035" fill="#2d5a1b" rx="8" stroke="#4a8a2b" stroke-width="2"/>
+
+  <!-- Corner holes -->
+  <circle cx="35" cy="35" r="5" fill="#0d2b00" stroke="#4a8a2b"/>
+  <circle cx="815" cy="35" r="5" fill="#0d2b00" stroke="#4a8a2b"/>
+  <circle cx="35" cy="1040" r="5" fill="#0d2b00" stroke="#4a8a2b"/>
+  <circle cx="815" cy="1040" r="5" fill="#0d2b00" stroke="#4a8a2b"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COPPER STRIPS (rows 1-39, orange, full width)
+       Strip y = 40 + (row-1)*25 + 3.5,  height = 18
+       ═══════════════════════════════════════════════════════ -->
+  <!-- Row 1: GND bus -->
+  <rect x="40" y="43" width="770" height="18" fill="#b55a00" rx="1"/>
+  <!-- Row 2: 5V bus -->
+  <rect x="40" y="68" width="770" height="18" fill="#b55a00" rx="1"/>
+  <!-- Row 3: 3V3 bus -->
+  <rect x="40" y="93" width="510" height="18" fill="#b55a00" rx="1"/>
+  <!-- Rows 4-39 -->
+  <rect x="40" y="118" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="143" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="168" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="193" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="218" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="243" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="268" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="293" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="318" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="343" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="368" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="393" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="418" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="443" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="468" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="493" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="518" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="543" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="568" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="593" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="618" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="643" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="668" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="693" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="718" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="743" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="768" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="793" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="818" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="843" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="868" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="893" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="918" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="943" width="770" height="18" fill="#7a3800" rx="1" opacity="0.6"/>
+  <rect x="40" y="968" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="993" width="770" height="18" fill="#b55a00" rx="1"/>
+  <rect x="40" y="1018" width="770" height="18" fill="#b55a00" rx="1"/>
+
+  <!-- Hole overlay (pattern) -->
+  <rect x="40" y="40" width="770" height="975" fill="url(#holes)"/>
+
+  <!-- ═══════════════════════════════════════════════════════
+       POWER RAIL LABELS
+       ═══════════════════════════════════════════════════════ -->
+  <text x="825" y="55" fill="#cccccc" font-size="8" text-anchor="middle" transform="rotate(0)">GND</text>
+  <text x="825" y="80" fill="#ff4444" font-size="8" text-anchor="middle">5V</text>
+  <text x="825" y="105" fill="#ff8844" font-size="8" text-anchor="middle">3V3</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       ROW NUMBERS (left margin)
+       ═══════════════════════════════════════════════════════ -->
+  <text x="32" y="55" fill="#888" font-size="7" text-anchor="end">1</text>
+  <text x="32" y="80" fill="#888" font-size="7" text-anchor="end">2</text>
+  <text x="32" y="105" fill="#888" font-size="7" text-anchor="end">3</text>
+  <text x="32" y="180" fill="#888" font-size="7" text-anchor="end">6</text>
+  <text x="32" y="205" fill="#888" font-size="7" text-anchor="end">7</text>
+  <text x="32" y="230" fill="#888" font-size="7" text-anchor="end">8</text>
+  <text x="32" y="255" fill="#888" font-size="7" text-anchor="end">9</text>
+  <text x="32" y="280" fill="#888" font-size="7" text-anchor="end">10</text>
+  <text x="32" y="305" fill="#888" font-size="7" text-anchor="end">11</text>
+  <text x="32" y="330" fill="#888" font-size="7" text-anchor="end">12</text>
+  <text x="32" y="355" fill="#888" font-size="7" text-anchor="end">13</text>
+  <text x="32" y="430" fill="#888" font-size="7" text-anchor="end">17</text>
+  <text x="32" y="555" fill="#888" font-size="7" text-anchor="end">22</text>
+  <text x="32" y="705" fill="#888" font-size="7" text-anchor="end">28</text>
+  <text x="32" y="805" fill="#888" font-size="7" text-anchor="end">32</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COLUMN NUMBERS (top margin)
+       Col x = 40 + (col-1)*25 + 12.5
+       ═══════════════════════════════════════════════════════ -->
+  <text x="52" y="36" fill="#888" font-size="7" text-anchor="middle">1</text>
+  <text x="102" y="36" fill="#888" font-size="7" text-anchor="middle">3</text>
+  <text x="127" y="36" fill="#888" font-size="7" text-anchor="middle">4</text>
+  <text x="302" y="36" fill="#888" font-size="7" text-anchor="middle">11</text>
+  <text x="390" y="36" fill="#888" font-size="7" text-anchor="middle">15</text>
+  <text x="515" y="36" fill="#888" font-size="7" text-anchor="middle">20</text>
+  <text x="590" y="36" fill="#888" font-size="7" text-anchor="middle">23</text>
+  <text x="752" y="36" fill="#888" font-size="7" text-anchor="middle">29</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COMPONENT: D1 MINI
+       Cols 4-11 (x: 127-302), Rows 6-13 (y: 168-343)
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="115" y="158" width="200" height="210" fill="#ffcc00" opacity="0.25" rx="4"
+        stroke="#ffcc00" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="215" y="175" fill="#ffcc00" font-size="9" font-weight="bold" text-anchor="middle">D1 Mini (ESP8266)</text>
+
+  <!-- D1 Mini left pins (col 4 = x:127+12.5=139.5) -->
+  <circle cx="139" cy="177" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="180" fill="#ffcc00" font-size="7.5" text-anchor="end">RST</text>
+  <circle cx="139" cy="202" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="205" fill="#ffcc00" font-size="7.5" text-anchor="end">A0</text>
+  <circle cx="139" cy="227" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="230" fill="#ffcc00" font-size="7.5" text-anchor="end">D0</text>
+  <circle cx="139" cy="252" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="255" fill="#ffcc00" font-size="7.5" text-anchor="end">D5</text>
+  <circle cx="139" cy="277" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="280" fill="#ffcc00" font-size="7.5" text-anchor="end">D6</text>
+  <circle cx="139" cy="302" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="305" fill="#ffcc00" font-size="7.5" text-anchor="end">D7</text>
+  <circle cx="139" cy="327" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="110" y="330" fill="#ffcc00" font-size="7.5" text-anchor="end">D8</text>
+  <circle cx="139" cy="352" r="5" fill="#ff8844" stroke="#cc6600" stroke-width="1.5"/>
+  <text x="110" y="355" fill="#ff8844" font-size="7.5" text-anchor="end">3V3</text>
+
+  <!-- D1 Mini right pins (col 11 = x:302+12.5=314.5) -->
+  <circle cx="314" cy="177" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="323" y="180" fill="#ffcc00" font-size="7.5">TX</text>
+  <circle cx="314" cy="202" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="323" y="205" fill="#ffcc00" font-size="7.5">RX</text>
+  <circle cx="314" cy="227" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="323" y="230" fill="#44aaff" font-size="7.5">D1/SCL</text>
+  <circle cx="314" cy="252" r="5" fill="#44ff88" stroke="#00aa44" stroke-width="1.5"/>
+  <text x="323" y="255" fill="#44ff88" font-size="7.5">D2/SDA</text>
+  <circle cx="314" cy="277" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="323" y="280" fill="#ffcc00" font-size="7.5">D3</text>
+  <circle cx="314" cy="302" r="5" fill="#ffcc00" stroke="#cc9900" stroke-width="1.5"/>
+  <text x="323" y="305" fill="#ffcc00" font-size="7.5">D4</text>
+  <circle cx="314" cy="327" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="323" y="330" fill="#aaaaaa" font-size="7.5">GND</text>
+  <circle cx="314" cy="352" r="5" fill="#ff4444" stroke="#cc0000" stroke-width="1.5"/>
+  <text x="323" y="355" fill="#ff4444" font-size="7.5">5V</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COMPONENT: ADS1115
+       Col 15 (x:390), Rows 6-15 (y:168-418)
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="382" y="158" width="60" height="270" fill="#0088ff" opacity="0.2" rx="4"
+        stroke="#0088ff" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="412" y="172" fill="#44aaff" font-size="8" font-weight="bold" text-anchor="middle">ADS</text>
+  <text x="412" y="182" fill="#44aaff" font-size="8" font-weight="bold" text-anchor="middle">1115</text>
+
+  <!-- ADS1115 pins (col 15 = x:390+12.5=402.5) -->
+  <circle cx="402" cy="177" r="5" fill="#ff8844" stroke="#cc6600" stroke-width="1.5"/>
+  <text x="420" y="180" fill="#ff8844" font-size="7">VDD</text>
+  <circle cx="402" cy="202" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="420" y="205" fill="#aaaaaa" font-size="7">GND</text>
+  <circle cx="402" cy="227" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="420" y="230" fill="#44aaff" font-size="7">SCL</text>
+  <circle cx="402" cy="252" r="5" fill="#44ff88" stroke="#00aa44" stroke-width="1.5"/>
+  <text x="420" y="255" fill="#44ff88" font-size="7">SDA</text>
+  <circle cx="402" cy="277" r="5" fill="#888888" stroke="#555555" stroke-width="1.5"/>
+  <text x="420" y="280" fill="#aaaaaa" font-size="7">ADDR</text>
+  <circle cx="402" cy="302" r="5" fill="#555555" stroke="#333333" stroke-width="1.5"/>
+  <text x="420" y="305" fill="#888888" font-size="7">ALRT</text>
+  <circle cx="402" cy="327" r="5" fill="#cc44ff" stroke="#8800cc" stroke-width="1.5"/>
+  <text x="420" y="330" fill="#cc44ff" font-size="7">A0←</text>
+  <circle cx="402" cy="352" r="5" fill="#555555" stroke="#333333" stroke-width="1.5"/>
+  <text x="420" y="355" fill="#888888" font-size="7">A1</text>
+  <circle cx="402" cy="377" r="5" fill="#555555" stroke="#333333" stroke-width="1.5"/>
+  <text x="420" y="380" fill="#888888" font-size="7">A2</text>
+  <circle cx="402" cy="402" r="5" fill="#555555" stroke="#333333" stroke-width="1.5"/>
+  <text x="420" y="405" fill="#888888" font-size="7">A3</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COMPONENT: 4-20mA RECEIVER
+       Col 19 (x:515), Rows 17-21 (y:443-568)
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="505" y="433" width="70" height="145" fill="#cc44ff" opacity="0.2" rx="4"
+        stroke="#cc44ff" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="540" y="445" fill="#cc44ff" font-size="7.5" font-weight="bold" text-anchor="middle">4-20mA</text>
+  <text x="540" y="456" fill="#cc44ff" font-size="7.5" font-weight="bold" text-anchor="middle">Empf.</text>
+
+  <!-- 4-20mA pins (col 19 = x:515+12.5=527.5) -->
+  <circle cx="527" cy="452" r="5" fill="#ff4444" stroke="#cc0000" stroke-width="1.5"/>
+  <text x="548" y="455" fill="#ff4444" font-size="7">VCC</text>
+  <circle cx="527" cy="477" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="548" y="480" fill="#aaaaaa" font-size="7">GND</text>
+  <circle cx="527" cy="502" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="548" y="505" fill="#44aaff" font-size="7">I+</text>
+  <circle cx="527" cy="527" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="548" y="530" fill="#44aaff" font-size="7">I-</text>
+  <circle cx="527" cy="552" r="5" fill="#cc44ff" stroke="#8800cc" stroke-width="1.5"/>
+  <text x="548" y="555" fill="#cc44ff" font-size="7">VOUT→</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       COMPONENT: BOOST CONVERTER
+       Cols 22-23 (x:590-615), Rows 22-26 (y:568-668)
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="577" y="558" width="75" height="135" fill="#88cc00" opacity="0.2" rx="4"
+        stroke="#88cc00" stroke-width="1.5" stroke-dasharray="4,2"/>
+  <text x="614" y="570" fill="#88cc00" font-size="7.5" font-weight="bold" text-anchor="middle">Boost</text>
+  <text x="614" y="580" fill="#88cc00" font-size="7.5" font-weight="bold" text-anchor="middle">Conv.</text>
+
+  <!-- Boost pins -->
+  <circle cx="602" cy="590" r="5" fill="#ff4444" stroke="#cc0000" stroke-width="1.5"/>
+  <text x="621" y="593" fill="#ff4444" font-size="7">IN+</text>
+  <circle cx="627" cy="590" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="642" y="593" fill="#aaaaaa" font-size="7">IN-</text>
+  <circle cx="602" cy="665" r="5" fill="#88cc00" stroke="#448800" stroke-width="1.5"/>
+  <text x="621" y="668" fill="#88cc00" font-size="7">OUT+</text>
+  <circle cx="627" cy="665" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="642" y="668" fill="#aaaaaa" font-size="7">OUT-</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SCREW TERMINALS
+       ═══════════════════════════════════════════════════════ -->
+  <!-- Sensor terminal (col 1-2, rows 28-29) -->
+  <rect x="42" y="700" width="60" height="55" fill="#ff6600" opacity="0.25" rx="3"
+        stroke="#ff6600" stroke-width="1.5"/>
+  <text x="72" y="715" fill="#ff6600" font-size="7.5" text-anchor="middle">Sensor</text>
+  <circle cx="52" cy="727" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="62" y="730" fill="#44aaff" font-size="7">I+</text>
+  <circle cx="52" cy="752" r="5" fill="#44aaff" stroke="#0066cc" stroke-width="1.5"/>
+  <text x="62" y="755" fill="#44aaff" font-size="7">I-</text>
+
+  <!-- 12V output terminal (col 1-2, rows 32-33) -->
+  <rect x="42" y="800" width="65" height="55" fill="#88cc00" opacity="0.25" rx="3"
+        stroke="#88cc00" stroke-width="1.5"/>
+  <text x="74" y="815" fill="#88cc00" font-size="7.5" text-anchor="middle">12V out</text>
+  <circle cx="52" cy="827" r="5" fill="#88cc00" stroke="#448800" stroke-width="1.5"/>
+  <text x="62" y="830" fill="#88cc00" font-size="7">12V+</text>
+  <circle cx="52" cy="852" r="5" fill="#666666" stroke="#444444" stroke-width="1.5"/>
+  <text x="62" y="855" fill="#aaaaaa" font-size="7">GND</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       STRIP CUTS (red X marks)
+       Cut = small red mark at strip position
+       Col x = 40 + (col-1)*25 + 12.5
+       Row y = 40 + (row-1)*25 + 12.5
+       col 7 = 40 + 6*25 + 12.5 = 202.5
+       col 12 = 40 + 11*25 + 12.5 = 327.5
+       ═══════════════════════════════════════════════════════ -->
+  <g fill="none" stroke="#ff2222" stroke-width="2">
+    <!-- col 7, rows 6-13 (D1 Mini cuts) -->
+    <line x1="196" y1="170" x2="208" y2="183"/><line x1="208" y1="170" x2="196" y2="183"/>
+    <line x1="196" y1="195" x2="208" y2="208"/><line x1="208" y1="195" x2="196" y2="208"/>
+    <line x1="196" y1="220" x2="208" y2="233"/><line x1="208" y1="220" x2="196" y2="233"/>
+    <line x1="196" y1="245" x2="208" y2="258"/><line x1="208" y1="245" x2="196" y2="258"/>
+    <line x1="196" y1="270" x2="208" y2="283"/><line x1="208" y1="270" x2="196" y2="283"/>
+    <line x1="196" y1="295" x2="208" y2="308"/><line x1="208" y1="295" x2="196" y2="308"/>
+    <line x1="196" y1="320" x2="208" y2="333"/><line x1="208" y1="320" x2="196" y2="333"/>
+    <line x1="196" y1="345" x2="208" y2="358"/><line x1="208" y1="345" x2="196" y2="358"/>
+    <!-- col 12, rows 6,7,10,11,12,13 (ADS isolation cuts) -->
+    <line x1="321" y1="170" x2="333" y2="183"/><line x1="333" y1="170" x2="321" y2="183"/>
+    <line x1="321" y1="195" x2="333" y2="208"/><line x1="333" y1="195" x2="321" y2="208"/>
+    <line x1="321" y1="270" x2="333" y2="283"/><line x1="333" y1="270" x2="321" y2="283"/>
+    <line x1="321" y1="295" x2="333" y2="308"/><line x1="333" y1="295" x2="321" y2="308"/>
+    <line x1="321" y1="320" x2="333" y2="333"/><line x1="333" y1="320" x2="321" y2="333"/>
+    <line x1="321" y1="345" x2="333" y2="358"/><line x1="333" y1="345" x2="321" y2="358"/>
+  </g>
+
+  <!-- ═══════════════════════════════════════════════════════
+       JUMPER WIRES
+       ═══════════════════════════════════════════════════════ -->
+  <!-- GND: D1 Mini GND (col11, row12) → GND rail (col11, row1) -->
+  <line x1="314" y1="52" x2="314" y2="327" stroke="#888888" stroke-width="2.5" stroke-dasharray="3,2"/>
+  <!-- 5V: D1 Mini 5V (col11, row13) → 5V rail (col11, row2) -->
+  <line x1="316" y1="77" x2="316" y2="352" stroke="#ff4444" stroke-width="2.5" stroke-dasharray="3,2"/>
+  <!-- 3V3: D1 Mini 3V3 (col4, row13) → 3V3 rail (col4, row3) -->
+  <line x1="139" y1="102" x2="139" y2="352" stroke="#ff8844" stroke-width="2.5" stroke-dasharray="3,2"/>
+  <!-- ADS VDD (col15, row6) → 3V3 rail (col15, row3) -->
+  <line x1="402" y1="102" x2="402" y2="177" stroke="#ff8844" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- ADS GND (col15, row7) → GND rail (col15, row1) -->
+  <line x1="404" y1="52" x2="404" y2="202" stroke="#888888" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- ADS ADDR (col15, row10) → GND rail -->
+  <line x1="406" y1="52" x2="406" y2="277" stroke="#888888" stroke-width="1.5" stroke-dasharray="2,2"/>
+  <!-- 4-20mA VCC → 5V rail -->
+  <line x1="527" y1="77" x2="527" y2="452" stroke="#ff4444" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- 4-20mA GND → GND rail -->
+  <line x1="529" y1="52" x2="529" y2="477" stroke="#888888" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- VOUT → ADS A0 (diagonal) -->
+  <line x1="527" y1="552" x2="402" y2="327" stroke="#cc44ff" stroke-width="2" stroke-dasharray="4,2"/>
+  <!-- Boost IN+ → 5V rail -->
+  <line x1="602" y1="77" x2="602" y2="590" stroke="#ff4444" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- Boost IN- → GND rail -->
+  <line x1="627" y1="52" x2="627" y2="590" stroke="#888888" stroke-width="2" stroke-dasharray="3,2"/>
+  <!-- Boost OUT+ → 12V screw terminal -->
+  <line x1="602" y1="665" x2="52" y2="827" stroke="#88cc00" stroke-width="2" stroke-dasharray="4,2"/>
+  <!-- 4-20mA I+ → Sensor terminal -->
+  <line x1="527" y1="502" x2="52" y2="727" stroke="#44aaff" stroke-width="2" stroke-dasharray="4,2"/>
+  <!-- 4-20mA I- → Sensor terminal -->
+  <line x1="527" y1="527" x2="52" y2="752" stroke="#44aaff" stroke-width="2" stroke-dasharray="4,2"/>
+
+  <!-- SCL connection: D1 Mini D1 (col11,row8) directly connects to ADS SCL (col15,row8) via strip -->
+  <line x1="314" y1="227" x2="402" y2="227" stroke="#44aaff" stroke-width="3" opacity="0.7"/>
+  <text x="357" y="222" fill="#44aaff" font-size="7" text-anchor="middle">SCL</text>
+  <!-- SDA connection: D1 Mini D2 (col11,row9) directly connects to ADS SDA (col15,row9) via strip -->
+  <line x1="314" y1="252" x2="402" y2="252" stroke="#44ff88" stroke-width="3" opacity="0.7"/>
+  <text x="357" y="247" fill="#44ff88" font-size="7" text-anchor="middle">SDA</text>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TITLE AND LEGEND
+       ═══════════════════════════════════════════════════════ -->
+  <rect x="450" y="880" width="360" height="155" fill="#0a0a1a" rx="5" opacity="0.85"/>
+  <text x="630" y="898" fill="#ffffff" font-size="10" font-weight="bold" text-anchor="middle">Legende</text>
+  <!-- Cuts -->
+  <g stroke="#ff2222" stroke-width="2">
+    <line x1="460" y1="912" x2="468" y2="920"/><line x1="468" y1="912" x2="460" y2="920"/>
+  </g>
+  <text x="476" y="920" fill="#ff6666" font-size="8">Bahnschnitt (CUT)</text>
+  <!-- SCL wire -->
+  <line x1="460" y1="933" x2="480" y2="933" stroke="#44aaff" stroke-width="3"/>
+  <text x="488" y="937" fill="#44aaff" font-size="8">SCL (Bahn, kein Schnitt)</text>
+  <!-- SDA wire -->
+  <line x1="460" y1="950" x2="480" y2="950" stroke="#44ff88" stroke-width="3"/>
+  <text x="488" y="954" fill="#44ff88" font-size="8">SDA (Bahn, kein Schnitt)</text>
+  <!-- GND jumper -->
+  <line x1="460" y1="967" x2="480" y2="967" stroke="#888888" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="488" y="971" fill="#aaaaaa" font-size="8">GND Jumper</text>
+  <!-- 5V jumper -->
+  <line x1="460" y1="984" x2="480" y2="984" stroke="#ff4444" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="488" y="988" fill="#ff4444" font-size="8">5V Jumper</text>
+  <!-- 3V3 jumper -->
+  <line x1="460" y1="1001" x2="480" y2="1001" stroke="#ff8844" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="488" y="1005" fill="#ff8844" font-size="8">3V3 Jumper</text>
+  <!-- Signal -->
+  <line x1="460" y1="1018" x2="480" y2="1018" stroke="#cc44ff" stroke-width="2" stroke-dasharray="3,2"/>
+  <text x="488" y="1022" fill="#cc44ff" font-size="8">Signal (VOUT→A0)</text>
+
+  <!-- Title -->
+  <text x="425" y="1057" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">
+    Water Tank Monitor — Streifenrasterplatine 75×100mm
+  </text>
+  <text x="425" y="1070" fill="#888888" font-size="8" text-anchor="middle">
+    29 Spalten × 39 Reihen | Raster 2,54mm | Bahnen horizontal
+  </text>
+</svg>
