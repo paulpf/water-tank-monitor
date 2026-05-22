@@ -85,10 +85,42 @@ WiFi-Konnektivität und OTA-Updates sind eingebaut.
 
 ### Kalibrierung des Signalempfängers
 
-1. **ZERO-Trimmer:** 4 mA in I+/I– einspeisen → Ausgang auf **0 V** trimmen
-2. **SPAN-Trimmer:** 20 mA in I+/I– einspeisen → Ausgang auf **3,3 V** trimmen
+Der 4-20 mA Empfänger hat zwei Trimmer: **ZERO** (Nullpunkt) und **SPAN** (Vollausschlag).
+Ziel: 4 mA → 0,00 V, 20 mA → 3,30 V am Ausgang.
 
-Ohne Kalibrierstromquelle: Sensor bei leerem Tank (4 mA) ZERO und bei vollem Tank (20 mA) SPAN einstellen.
+#### Schritt 1 – ZERO einstellen (Nullpunkt, leerer Tank)
+
+- Multimeter (DC-Spannung) zwischen Empfänger-Ausgang und GND klemmen
+- Tank leeren **oder** 4 mA in I+/I– einspeisen (Kalibrierstromquelle / Shunt-Widerstand, s. u.)
+- **ZERO-Trimmer** drehen bis Ausgangs­spannung = **0,00 V**
+
+#### Schritt 2 – SPAN einstellen (Vollausschlag, voller Tank)
+
+- Tank füllen **oder** 20 mA einspeisen
+- **SPAN-Trimmer** drehen bis Ausgangs­spannung = **3,30 V**
+
+#### Schritt 3 – Iterieren
+
+ZERO und SPAN beeinflussen sich gegenseitig leicht.  
+Schritte 1 und 2 zwei- bis dreimal wiederholen bis beide Punkte stabil sind.
+
+#### 20 mA simulieren ohne vollen Tank
+
+Einen bekannten Widerstand in den Loop schalten und die Spannung messen:
+
+```
+I = U / R    →    R = U / I
+
+Beispiel: 12 V Boost, 560 Ω Widerstand → I = 12 V / 560 Ω ≈ 21,4 mA  (nah genug für SPAN)
+```
+
+Multimeter in Reihe (Strommessung) ist die präziseste Methode.
+
+#### Hinweis: ZERO-Drift bei 12 V
+
+Bei 12 V Loop-Spannung kann der ZERO-Punkt leicht über 0 V liegen.  
+Liegt der Ausgang bei leerem Tank z. B. auf 0,05 V statt 0,00 V,  
+den ZERO-Trimmer so weit wie möglich gegen 0 V trimmen — der Rest wird durch die **Software-Kalibrierung** (s. u.) korrigiert.
 
 ---
 
@@ -171,7 +203,29 @@ constexpr float    SENSOR_VREF            = 3.3f;   // V (= Vollausschlag Empfä
 constexpr uint32_t SENSOR_READ_INTERVAL_MS = 5000;  // ms
 ```
 
-Die Formel setzt voraus, dass der Signalempfänger auf **4 mA → 0 V** und **20 mA → 3,3 V** kalibriert ist (ZERO/SPAN-Trimmer).
+Die Formel setzt voraus, dass der Signalempfänger auf **4 mA → 0 V** und **20 mA → 3,3 V** kalibriert ist (ZERO/SPAN-Trimmer, s. Abschnitt [Kalibrierung des Signalempfängers](#kalibrierung-des-signalempfängers)).
+
+### Software-Kalibrierung (Feinabgleich)
+
+Weicht der angezeigte Wert vom tatsächlichen Füllstand ab, kann eine lineare Korrektur in `config.h` eingetragen werden:
+
+```cpp
+constexpr float SENSOR_CAL_RAW    = 59.6f;  // angezeigter % beim Referenzpunkt
+constexpr float SENSOR_CAL_ACTUAL = 71.1f;  // tatsächlicher % an diesem Punkt
+```
+
+**Vorgehen:**
+
+1. Firmware flashen und Serial-Monitor öffnen
+2. Tank auf einen **bekannten Füllstand** bringen (z. B. mit Maßband messen)
+3. Den angezeigten %-Wert aus dem Serial-Log ablesen
+4. `SENSOR_CAL_RAW` = angezeigter Wert, `SENSOR_CAL_ACTUAL` = echter Wert
+5. Firmware neu bauen und flashen
+
+Der Nullpunkt (0 % → 0 %) ist fix — es wird immer durch den Ursprung kalibriert.  
+Der Korrekturfaktor ergibt sich automatisch: `Faktor = ACTUAL / RAW`.
+
+> Beispiel: Angezeigt 59,6 %, tatsächlich 71,1 % → Faktor ≈ 1,193 → alle Werte werden hochskaliert.
 
 ### Library
 

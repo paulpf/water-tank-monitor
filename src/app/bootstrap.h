@@ -6,6 +6,8 @@
 #include "otamanager.h"
 #include "systemconfig.h"
 #include "levelsensor.h"
+#include "mqttmanager.h"
+#include "connectivitycoordinator.h"
 
 class Bootstrap
 {
@@ -18,6 +20,8 @@ private:
   OtaManager _otaManager;
   SystemConfig _systemConfig;
   LevelSensor _levelSensor;
+  MqttManager _mqttManager;
+  ConnectivityCoordinator _connectivityCoordinator;
   Application _app;
 };
 
