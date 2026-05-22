@@ -1,0 +1,286 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1180" viewBox="0 0 1800 1180">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f3f5f9"/>
+      <stop offset="100%" stop-color="#e4e8ef"/>
+    </linearGradient>
+    <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f2e2bc"/>
+      <stop offset="100%" stop-color="#e4ce9d"/>
+    </linearGradient>
+    <linearGradient id="modBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#245592"/>
+      <stop offset="100%" stop-color="#1a3f6b"/>
+    </linearGradient>
+    <linearGradient id="modDark" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#20242b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.25"/>
+    </filter>
+    <pattern id="holes" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="none"/>
+      <circle cx="12" cy="12" r="3.2" fill="#faf7f0" stroke="#8a6b40" stroke-width="0.7"/>
+    </pattern>
+    <pattern id="strips" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="none"/>
+      <rect x="0" y="10" width="24" height="4" fill="#b07d4f" fill-opacity="0.5"/>
+    </pattern>
+    <style>
+      .h1 { font: 700 34px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .h2 { font: 500 17px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .h3 { font: 700 17px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .txt { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .mono { font: 600 12px 'Consolas', 'Courier New', monospace; fill: #334155; }
+      .pin { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #e5e7eb; }
+      .legend { font: 600 13px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .wire5 { stroke: #f97316; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wire12 { stroke: #dc2626; stroke-width: 4.4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireG { stroke: #111827; stroke-width: 4.1; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireI2C { stroke: #ca8a04; stroke-width: 3.6; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireANA { stroke: #7c3aed; stroke-width: 3.9; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireLOOP { stroke: #2563eb; stroke-width: 4.1; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .cut { fill: #ef4444; stroke: #7f1d1d; stroke-width: 1; }
+      .via { fill: #ef4444; stroke: #7f1d1d; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="1180" fill="url(#bg)"/>
+  <text x="42" y="54" class="h1">Realistischer Lötplan V2 - Streifenraster 75 x 100 mm</text>
+  <text x="42" y="84" class="h2">Top-View Bauteilseite | D1 Mini + ADS1115 + XL6009 + 4-20mA Receiver | orthogonales Routing + klare Netzfuehrung</text>
+
+  <!-- Board -->
+  <g filter="url(#shadow)">
+    <rect x="42" y="112" width="1288" height="980" rx="16" ry="16" fill="url(#boardGrad)" stroke="#7b5c35" stroke-width="2.4"/>
+    <rect x="78" y="152" width="1216" height="900" fill="url(#strips)" opacity="0.48"/>
+    <rect x="78" y="152" width="1216" height="900" fill="url(#holes)"/>
+  </g>
+
+  <text x="82" y="138" class="h3">Raster 30 x 39 (2.54 mm), Leiterbahnen horizontal</text>
+  <text x="82" y="1074" class="mono">Spalten: 1  ...  30</text>
+  <text x="52" y="176" class="mono">A</text>
+  <text x="52" y="272" class="mono">E</text>
+  <text x="52" y="368" class="mono">I</text>
+  <text x="52" y="464" class="mono">M</text>
+  <text x="52" y="560" class="mono">Q</text>
+  <text x="52" y="656" class="mono">U</text>
+  <text x="52" y="752" class="mono">Y</text>
+  <text x="44" y="848" class="mono">AC</text>
+  <text x="44" y="944" class="mono">AG</text>
+
+  <!-- D1 mini -->
+  <g filter="url(#shadow)">
+    <rect x="892" y="248" width="350" height="246" rx="12" ry="12" fill="url(#modBlue)" stroke="#112e4f" stroke-width="2.2"/>
+    <rect x="972" y="292" width="184" height="132" rx="8" ry="8" fill="url(#modDark)"/>
+    <text x="1008" y="349" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="40" font-weight="700">C</text>
+    <text x="1038" y="349" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="31" font-weight="700">A-Delivery</text>
+    <text x="1004" y="380" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="18" font-weight="600">ESP8266MOD 12-F</text>
+    <text x="914" y="276" class="pin">D1 Mini</text>
+
+    <g fill="#cbd5e1">
+      <circle cx="918" cy="306" r="4"/><circle cx="918" cy="334" r="4"/><circle cx="918" cy="362" r="4"/><circle cx="918" cy="390" r="4"/><circle cx="918" cy="418" r="4"/><circle cx="918" cy="446" r="4"/><circle cx="918" cy="474" r="4"/>
+      <circle cx="1216" cy="306" r="4"/><circle cx="1216" cy="334" r="4"/><circle cx="1216" cy="362" r="4"/><circle cx="1216" cy="390" r="4"/><circle cx="1216" cy="418" r="4"/><circle cx="1216" cy="446" r="4"/><circle cx="1216" cy="474" r="4"/>
+    </g>
+
+    <text x="930" y="310" class="pin">RST</text>
+    <text x="930" y="338" class="pin">A0</text>
+    <text x="930" y="366" class="pin">D0</text>
+    <text x="930" y="394" class="pin">D5</text>
+    <text x="930" y="422" class="pin">D6</text>
+    <text x="930" y="450" class="pin">D7</text>
+    <text x="930" y="478" class="pin">D8</text>
+
+    <text x="1130" y="310" class="pin">TX</text>
+    <text x="1130" y="338" class="pin">RX</text>
+    <text x="1128" y="366" class="pin">D1</text>
+    <text x="1128" y="394" class="pin">D2</text>
+    <text x="1128" y="422" class="pin">D3</text>
+    <text x="1128" y="450" class="pin">D4</text>
+    <text x="1088" y="478" class="pin">3V3  5V  GND</text>
+  </g>
+
+  <!-- ADS -->
+  <g filter="url(#shadow)">
+    <rect x="640" y="272" width="206" height="286" rx="11" ry="11" fill="url(#modBlue)" stroke="#15416f" stroke-width="2"/>
+    <text x="664" y="302" class="pin">ADS1115</text>
+    <text x="664" y="322" class="pin">16 Bit I2C ADC + PGA</text>
+
+    <g fill="#cbd5e1">
+      <circle cx="666" cy="350" r="4"/><circle cx="666" cy="376" r="4"/><circle cx="666" cy="402" r="4"/><circle cx="666" cy="428" r="4"/><circle cx="666" cy="454" r="4"/><circle cx="666" cy="480" r="4"/>
+      <circle cx="818" cy="454" r="4"/><circle cx="818" cy="480" r="4"/><circle cx="818" cy="506" r="4"/><circle cx="818" cy="532" r="4"/>
+    </g>
+
+    <text x="678" y="354" class="pin">VDD</text>
+    <text x="678" y="380" class="pin">GND</text>
+    <text x="678" y="406" class="pin">SCL</text>
+    <text x="678" y="432" class="pin">SDA</text>
+    <text x="678" y="458" class="pin">ADDR</text>
+    <text x="678" y="484" class="pin">ALRT</text>
+
+    <text x="790" y="458" class="pin">A0</text>
+    <text x="790" y="484" class="pin">A1</text>
+    <text x="790" y="510" class="pin">A2</text>
+    <text x="790" y="536" class="pin">A3</text>
+  </g>
+
+  <!-- Receiver -->
+  <g filter="url(#shadow)">
+    <rect x="448" y="574" width="390" height="268" rx="12" ry="12" fill="url(#modBlue)" stroke="#184879" stroke-width="2"/>
+    <text x="474" y="606" class="pin">4-20mA Receiver</text>
+    <text x="474" y="628" class="pin">ZERO/SPAN | VCC VOUT GND | I+ I- | J1</text>
+    <rect x="488" y="650" width="312" height="38" rx="6" ry="6" fill="#0f172a"/>
+    <text x="504" y="674" class="pin">VCC         VOUT          GND</text>
+    <rect x="532" y="734" width="220" height="40" rx="6" ry="6" fill="#111827"/>
+    <text x="560" y="760" class="pin">I+               I-</text>
+    <rect x="720" y="704" width="70" height="20" rx="3" ry="3" fill="#1f2937"/>
+    <text x="726" y="718" class="pin">J1 cfg</text>
+  </g>
+
+  <!-- Boost -->
+  <g filter="url(#shadow)">
+    <rect x="170" y="640" width="240" height="332" rx="12" ry="12" fill="url(#modBlue)" stroke="#184879" stroke-width="2"/>
+    <text x="220" y="672" class="pin">XL6009</text>
+    <text x="194" y="694" class="pin">Boost Converter 5V to 12V</text>
+    <circle cx="196" cy="730" r="6" fill="#cbd5e1"/>
+    <circle cx="386" cy="730" r="6" fill="#cbd5e1"/>
+    <circle cx="196" cy="940" r="6" fill="#cbd5e1"/>
+    <circle cx="386" cy="940" r="6" fill="#cbd5e1"/>
+    <text x="214" y="735" class="pin">IN+</text>
+    <text x="330" y="735" class="pin">IN-</text>
+    <text x="214" y="945" class="pin">OUT+</text>
+    <text x="324" y="945" class="pin">OUT-</text>
+  </g>
+
+  <!-- Sensor terminal -->
+  <g filter="url(#shadow)">
+    <rect x="900" y="706" width="284" height="140" rx="10" ry="10" fill="#bdebd8" stroke="#2f855a" stroke-width="2"/>
+    <text x="928" y="742" class="h3" fill="#14532d">Sensor Klemme</text>
+    <text x="928" y="770" class="txt" fill="#14532d">Braun (+12V)</text>
+    <text x="928" y="798" class="txt" fill="#14532d">Blau (Loop -)</text>
+  </g>
+
+  <!-- Service header area -->
+  <g filter="url(#shadow)">
+    <rect x="1362" y="112" width="394" height="596" rx="12" ry="12" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+    <text x="1386" y="146" class="h3">Service Header (alle freien Pins)</text>
+    <text x="1386" y="172" class="txt">RST A0 D0 D3 D4 D5 D6 D7 D8 TX RX ALRT A1 A2 A3 GND</text>
+    <g fill="#111827">
+      <circle cx="1394" cy="208" r="4"/><circle cx="1418" cy="208" r="4"/><circle cx="1442" cy="208" r="4"/><circle cx="1466" cy="208" r="4"/><circle cx="1490" cy="208" r="4"/><circle cx="1514" cy="208" r="4"/><circle cx="1538" cy="208" r="4"/><circle cx="1562" cy="208" r="4"/><circle cx="1586" cy="208" r="4"/><circle cx="1610" cy="208" r="4"/><circle cx="1634" cy="208" r="4"/><circle cx="1658" cy="208" r="4"/><circle cx="1682" cy="208" r="4"/><circle cx="1706" cy="208" r="4"/><circle cx="1730" cy="208" r="4"/><circle cx="1754" cy="208" r="4"/>
+    </g>
+
+    <text x="1386" y="258" class="h3">Netz-Checkliste</text>
+    <text x="1386" y="286" class="txt">1. 5V: D1 5V -> Boost IN+</text>
+    <text x="1386" y="310" class="txt">2. GND: D1 G -> IN- -> OUT- -> Receiver GND/I- -> ADS GND</text>
+    <text x="1386" y="334" class="txt">3. 12V: Boost OUT+ -> Sensor Braun -> Receiver VCC</text>
+    <text x="1386" y="358" class="txt">4. Loop: Sensor Blau -> Receiver I+</text>
+    <text x="1386" y="382" class="txt">5. Analog: Receiver VOUT -> ADS A0</text>
+    <text x="1386" y="406" class="txt">6. I2C: D1/D2 -> ADS SCL/SDA</text>
+    <text x="1386" y="430" class="txt">7. 3V3: D1 3V3 -> ADS VDD</text>
+    <text x="1386" y="454" class="txt">8. ADDR: ADS ADDR -> GND</text>
+
+    <text x="1386" y="504" class="h3">Lotreihenfolge</text>
+    <text x="1386" y="530" class="txt">1. Track-Cuts setzen und messen</text>
+    <text x="1386" y="554" class="txt">2. GND-Bus aufbauen</text>
+    <text x="1386" y="578" class="txt">3. Versorgung (5V/3V3/12V)</text>
+    <text x="1386" y="602" class="txt">4. Signale (I2C/Analog/Loop)</text>
+    <text x="1386" y="626" class="txt">5. Erststart mit Strombegrenzung</text>
+    <text x="1386" y="660" class="txt">Hinweis: 12.0V am Boost vor Anschluss einstellen.</text>
+  </g>
+
+  <!-- Solder side inset -->
+  <g filter="url(#shadow)">
+    <rect x="1362" y="730" width="394" height="362" rx="12" ry="12" fill="#fff7ed" stroke="#c2410c" stroke-width="1.5"/>
+    <text x="1386" y="764" class="h3">Loetseite (Kupfer, Unterseite)</text>
+    <rect x="1386" y="786" width="344" height="264" fill="#f5dfbc" stroke="#8b5e34" stroke-width="1"/>
+    <g stroke="#b07d4f" stroke-width="3" opacity="0.85">
+      <line x1="1394" y1="808" x2="1722" y2="808"/>
+      <line x1="1394" y1="832" x2="1722" y2="832"/>
+      <line x1="1394" y1="856" x2="1722" y2="856"/>
+      <line x1="1394" y1="880" x2="1722" y2="880"/>
+      <line x1="1394" y1="904" x2="1722" y2="904"/>
+      <line x1="1394" y1="928" x2="1722" y2="928"/>
+      <line x1="1394" y1="952" x2="1722" y2="952"/>
+      <line x1="1394" y1="976" x2="1722" y2="976"/>
+      <line x1="1394" y1="1000" x2="1722" y2="1000"/>
+      <line x1="1394" y1="1024" x2="1722" y2="1024"/>
+    </g>
+    <g stroke="#dc2626" stroke-width="3">
+      <line x1="1518" y1="824" x2="1524" y2="836"/><line x1="1524" y1="824" x2="1518" y2="836"/>
+      <line x1="1474" y1="872" x2="1480" y2="884"/><line x1="1480" y1="872" x2="1474" y2="884"/>
+      <line x1="1634" y1="896" x2="1640" y2="908"/><line x1="1640" y1="896" x2="1634" y2="908"/>
+      <line x1="1578" y1="968" x2="1584" y2="980"/><line x1="1584" y1="968" x2="1578" y2="980"/>
+    </g>
+    <text x="1386" y="1072" class="txt">Rote X = Leiterbahn-Cuts (mit Durchgangspruefer kontrollieren)</text>
+  </g>
+
+  <!-- Wiring routes, orthogonal and spaced -->
+  <!-- 5V bus -->
+  <path d="M1138 474 L1138 718 L196 718" class="wire5"/>
+  <text x="1040" y="706" class="mono">5V_BUS</text>
+
+  <!-- GND bus backbone -->
+  <path d="M1168 474 L1168 746 L386 746 L386 940" class="wireG"/>
+  <path d="M386 940 L660 940 L660 766" class="wireG"/>
+  <path d="M660 766 L960 766" class="wireG"/>
+  <path d="M666 376 L666 746" class="wireG"/>
+  <path d="M666 454 L666 746 L700 746" class="wireG"/>
+  <text x="1006" y="760" class="mono">GND_BUS</text>
+
+  <!-- 12V bus -->
+  <path d="M196 940 L196 914 L1038 914 L1038 770" class="wire12"/>
+  <path d="M1038 914 L488 914 L488 669" class="wire12"/>
+  <text x="564" y="904" class="mono">12V_BUS</text>
+
+  <!-- Loop signal -->
+  <path d="M1038 798 L532 798 L532 754" class="wireLOOP"/>
+  <text x="846" y="810" class="mono">LOOP_IN</text>
+
+  <!-- Analog signal -->
+  <path d="M638 669 L818 669 L818 454" class="wireANA"/>
+  <text x="676" y="544" class="mono">ANALOG_IN</text>
+
+  <!-- I2C -->
+  <path d="M1136 362 L666 362 L666 402" class="wireI2C"/>
+  <path d="M1136 390 L666 390 L666 428" class="wireI2C"/>
+  <text x="936" y="350" class="mono">I2C_SCL</text>
+  <text x="936" y="382" class="mono">I2C_SDA</text>
+
+  <!-- 3V3 -->
+  <path d="M1092 474 L1092 350 L666 350" class="wire12"/>
+  <text x="912" y="472" class="mono">3V3_BUS</text>
+
+  <!-- red nodes -->
+  <circle cx="1138" cy="474" r="6" class="via"/>
+  <circle cx="1168" cy="474" r="6" class="via"/>
+  <circle cx="196" cy="718" r="6" class="via"/>
+  <circle cx="386" cy="746" r="6" class="via"/>
+  <circle cx="666" cy="746" r="6" class="via"/>
+  <circle cx="1038" cy="914" r="6" class="via"/>
+  <circle cx="638" cy="669" r="6" class="via"/>
+
+  <!-- Track cuts on main board -->
+  <circle cx="612" cy="308" r="7" class="cut"/>
+  <circle cx="612" cy="356" r="7" class="cut"/>
+  <circle cx="612" cy="404" r="7" class="cut"/>
+  <circle cx="430" cy="650" r="7" class="cut"/>
+  <circle cx="430" cy="698" r="7" class="cut"/>
+  <circle cx="430" cy="746" r="7" class="cut"/>
+  <circle cx="864" cy="650" r="7" class="cut"/>
+  <circle cx="864" cy="698" r="7" class="cut"/>
+  <circle cx="864" cy="746" r="7" class="cut"/>
+
+  <!-- Bottom legend -->
+  <g filter="url(#shadow)">
+    <rect x="42" y="1108" width="1714" height="56" rx="8" ry="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.2"/>
+    <line x1="70" y1="1136" x2="122" y2="1136" class="wire12"/><text x="132" y="1141" class="legend">12V</text>
+    <line x1="240" y1="1136" x2="292" y2="1136" class="wire5"/><text x="302" y="1141" class="legend">5V</text>
+    <line x1="386" y1="1136" x2="438" y2="1136" class="wireG"/><text x="448" y="1141" class="legend">GND</text>
+    <line x1="536" y1="1136" x2="588" y2="1136" class="wireI2C"/><text x="598" y="1141" class="legend">I2C</text>
+    <line x1="688" y1="1136" x2="740" y2="1136" class="wireANA"/><text x="750" y="1141" class="legend">Analog 0-3.3V</text>
+    <line x1="938" y1="1136" x2="990" y2="1136" class="wireLOOP"/><text x="1000" y="1141" class="legend">4-20mA Loop</text>
+    <circle cx="1226" cy="1136" r="7" class="cut"/><text x="1240" y="1141" class="legend">Track-Cut</text>
+    <circle cx="1410" cy="1136" r="6" class="via"/><text x="1424" y="1141" class="legend">Loetpunkt/Knoten</text>
+    <text x="1574" y="1141" class="legend">V2</text>
+  </g>
+</svg>

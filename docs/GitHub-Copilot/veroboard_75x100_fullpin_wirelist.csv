@@ -1,0 +1,35 @@
+ID,Net,From,To,Category,Required,Comment
+1,5V_BUS,D1Mini.5V,Boost.IN+,power,yes,D1 Mini USB 5V feed to boost input
+2,GND_BUS,D1Mini.G,Boost.IN-,power,yes,Primary ground return
+3,3V3_BUS,D1Mini.3V3,ADS1115.VDD,power,yes,ADC supply rail
+4,I2C_SCL,D1Mini.D1,ADS1115.SCL,signal,yes,I2C clock
+5,I2C_SDA,D1Mini.D2,ADS1115.SDA,signal,yes,I2C data
+6,ADDR_GND,ADS1115.ADDR,GND_BUS,signal,yes,Fix ADS1115 address to 0x48
+7,ANALOG_IN,Receiver.VOUT,ADS1115.A0,analog,yes,0-3.3V measurement path
+8,GND_BUS,ADS1115.GND,GND_BUS,power,yes,ADC ground reference
+9,12V_BUS,Boost.OUT+,Sensor.BrownPlus,power,yes,Loop supply positive
+10,GND_BUS,Boost.OUT-,GND_BUS,power,yes,Boost output negative to common ground
+11,12V_BUS,Sensor.BrownPlus,Receiver.VCC,power,yes,Receiver powered from 12V loop rail
+12,LOOP_IN,Sensor.BlueMinus,Receiver.I+,loop,yes,4-20mA signal input
+13,GND_BUS,Receiver.I-,GND_BUS,loop,yes,4-20mA return path
+14,GND_BUS,Receiver.GND,GND_BUS,power,yes,Receiver low-side reference
+15,TP_RST,D1Mini.RST,ServicePad.RST,service,yes,Expose reset pin
+16,TP_A0,D1Mini.A0,ServicePad.A0,service,yes,Expose ESP analog pin
+17,TP_D0,D1Mini.D0,ServicePad.D0,service,yes,Expose GPIO16
+18,TP_D3,D1Mini.D3,ServicePad.D3,service,yes,Expose GPIO0
+19,TP_D4,D1Mini.D4,ServicePad.D4,service,yes,Expose GPIO2
+20,TP_D5,D1Mini.D5,ServicePad.D5,service,yes,Expose SPI SCK pin
+21,TP_D6,D1Mini.D6,ServicePad.D6,service,yes,Expose SPI MISO pin
+22,TP_D7,D1Mini.D7,ServicePad.D7,service,yes,Expose SPI MOSI pin
+23,TP_D8,D1Mini.D8,ServicePad.D8,service,yes,Expose GPIO15
+24,TP_TX,D1Mini.TX,ServicePad.TX,service,yes,Expose UART TX
+25,TP_RX,D1Mini.RX,ServicePad.RX,service,yes,Expose UART RX
+26,TP_ALRT,ADS1115.ALRT,ServicePad.ALRT,service,yes,Expose ADS alert/ready pin
+27,TP_A1,ADS1115.A1,ServicePad.A1,service,yes,Spare analog input
+28,TP_A2,ADS1115.A2,ServicePad.A2,service,yes,Spare analog input
+29,TP_A3,ADS1115.A3,ServicePad.A3,service,yes,Spare analog input
+30,SERVICE_GND,GND_BUS,ServicePad.GND,service,yes,Ground for measurements at service header
+31,JP_CFG,Receiver.J1.1,Receiver.J1.Jumper,service,yes,Leave as configurable jumper
+32,JP_CFG,Receiver.J1.2,Receiver.J1.Jumper,service,yes,Leave as configurable jumper
+33,JP_CFG,Receiver.J1.3,Receiver.J1.Jumper,service,yes,Leave as configurable jumper
+34,JP_CFG,Receiver.J1.4,Receiver.J1.Jumper,service,yes,Leave as configurable jumper

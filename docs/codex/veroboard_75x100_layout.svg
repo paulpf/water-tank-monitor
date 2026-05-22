@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="980" viewBox="0 0 1400 980">
+  <defs>
+    <style>
+      .bg { fill: #fffdf8; }
+      .title { font: 700 30px "Segoe UI", Arial, sans-serif; fill: #1f2937; }
+      .subtitle { font: 500 16px "Segoe UI", Arial, sans-serif; fill: #4b5563; }
+      .axis { font: 600 12px "Consolas", "Courier New", monospace; fill: #374151; }
+      .legend { font: 500 14px "Segoe UI", Arial, sans-serif; fill: #1f2937; }
+      .board { fill: #f6e8bf; stroke: #8b5e34; stroke-width: 2.5; }
+      .strip { stroke: #b07d4f; stroke-width: 1; opacity: 0.45; }
+      .hole { fill: #fefbf0; stroke: #9a6d44; stroke-width: 0.45; }
+      .mod { stroke: #334155; stroke-width: 2; rx: 10; ry: 10; }
+      .txt { font: 700 17px "Segoe UI", Arial, sans-serif; fill: #0f172a; }
+      .pin { font: 500 13px "Segoe UI", Arial, sans-serif; fill: #1e293b; }
+      .wire5 { stroke: #f97316; stroke-width: 4; fill: none; }
+      .wire12 { stroke: #dc2626; stroke-width: 4; fill: none; }
+      .wiregnd { stroke: #111827; stroke-width: 4; fill: none; }
+      .wirei2c { stroke: #ca8a04; stroke-width: 3.5; fill: none; }
+      .wireana { stroke: #7c3aed; stroke-width: 3.5; fill: none; }
+      .wireloop { stroke: #2563eb; stroke-width: 4; fill: none; }
+      .cut { fill: #ef4444; stroke: #991b1b; stroke-width: 0.7; }
+      .note { font: 500 13px "Segoe UI", Arial, sans-serif; fill: #374151; }
+      .netlbl { font: 700 13px "Segoe UI", Arial, sans-serif; fill: #111827; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1400" height="980"/>
+  <text x="40" y="48" class="title">Water Tank Monitor - Veroboard 75 x 100 mm</text>
+  <text x="40" y="74" class="subtitle">Top view (component side) | 2.54 mm pitch | strips run horizontally</text>
+
+  <!-- Board area -->
+  <rect x="80" y="110" width="1220" height="780" class="board"/>
+
+  <!-- Rows (39) and columns (30) in schematic scale -->
+  <!-- Pitch used in drawing: 30 px -->
+  <!-- Grid origin: x=150, y=170 -->
+  <!-- Horizontal strips -->
+  <g>
+    <line x1="150" y1="170" x2="1020" y2="170" class="strip"/>
+    <line x1="150" y1="200" x2="1020" y2="200" class="strip"/>
+    <line x1="150" y1="230" x2="1020" y2="230" class="strip"/>
+    <line x1="150" y1="260" x2="1020" y2="260" class="strip"/>
+    <line x1="150" y1="290" x2="1020" y2="290" class="strip"/>
+    <line x1="150" y1="320" x2="1020" y2="320" class="strip"/>
+    <line x1="150" y1="350" x2="1020" y2="350" class="strip"/>
+    <line x1="150" y1="380" x2="1020" y2="380" class="strip"/>
+    <line x1="150" y1="410" x2="1020" y2="410" class="strip"/>
+    <line x1="150" y1="440" x2="1020" y2="440" class="strip"/>
+    <line x1="150" y1="470" x2="1020" y2="470" class="strip"/>
+    <line x1="150" y1="500" x2="1020" y2="500" class="strip"/>
+    <line x1="150" y1="530" x2="1020" y2="530" class="strip"/>
+    <line x1="150" y1="560" x2="1020" y2="560" class="strip"/>
+    <line x1="150" y1="590" x2="1020" y2="590" class="strip"/>
+    <line x1="150" y1="620" x2="1020" y2="620" class="strip"/>
+    <line x1="150" y1="650" x2="1020" y2="650" class="strip"/>
+    <line x1="150" y1="680" x2="1020" y2="680" class="strip"/>
+    <line x1="150" y1="710" x2="1020" y2="710" class="strip"/>
+    <line x1="150" y1="740" x2="1020" y2="740" class="strip"/>
+    <line x1="150" y1="770" x2="1020" y2="770" class="strip"/>
+  </g>
+
+  <!-- Holes (reduced density for readability but aligned to grid) -->
+  <g>
+    <circle cx="150" cy="170" r="2.8" class="hole"/><circle cx="180" cy="170" r="2.8" class="hole"/><circle cx="210" cy="170" r="2.8" class="hole"/><circle cx="240" cy="170" r="2.8" class="hole"/><circle cx="270" cy="170" r="2.8" class="hole"/><circle cx="300" cy="170" r="2.8" class="hole"/><circle cx="330" cy="170" r="2.8" class="hole"/><circle cx="360" cy="170" r="2.8" class="hole"/><circle cx="390" cy="170" r="2.8" class="hole"/><circle cx="420" cy="170" r="2.8" class="hole"/><circle cx="450" cy="170" r="2.8" class="hole"/><circle cx="480" cy="170" r="2.8" class="hole"/><circle cx="510" cy="170" r="2.8" class="hole"/><circle cx="540" cy="170" r="2.8" class="hole"/><circle cx="570" cy="170" r="2.8" class="hole"/><circle cx="600" cy="170" r="2.8" class="hole"/><circle cx="630" cy="170" r="2.8" class="hole"/><circle cx="660" cy="170" r="2.8" class="hole"/><circle cx="690" cy="170" r="2.8" class="hole"/><circle cx="720" cy="170" r="2.8" class="hole"/><circle cx="750" cy="170" r="2.8" class="hole"/><circle cx="780" cy="170" r="2.8" class="hole"/><circle cx="810" cy="170" r="2.8" class="hole"/><circle cx="840" cy="170" r="2.8" class="hole"/><circle cx="870" cy="170" r="2.8" class="hole"/><circle cx="900" cy="170" r="2.8" class="hole"/><circle cx="930" cy="170" r="2.8" class="hole"/><circle cx="960" cy="170" r="2.8" class="hole"/><circle cx="990" cy="170" r="2.8" class="hole"/><circle cx="1020" cy="170" r="2.8" class="hole"/>
+  </g>
+
+  <!-- Axis labels -->
+  <text x="145" y="145" class="axis">A</text>
+  <text x="145" y="205" class="axis">C</text>
+  <text x="145" y="265" class="axis">E</text>
+  <text x="145" y="325" class="axis">G</text>
+  <text x="145" y="385" class="axis">I</text>
+  <text x="145" y="445" class="axis">K</text>
+  <text x="145" y="505" class="axis">M</text>
+  <text x="145" y="565" class="axis">O</text>
+  <text x="145" y="625" class="axis">Q</text>
+  <text x="145" y="685" class="axis">S</text>
+  <text x="145" y="745" class="axis">U</text>
+  <text x="145" y="805" class="axis">W</text>
+
+  <text x="146" y="860" class="axis">1</text>
+  <text x="296" y="860" class="axis">6</text>
+  <text x="446" y="860" class="axis">11</text>
+  <text x="596" y="860" class="axis">16</text>
+  <text x="746" y="860" class="axis">21</text>
+  <text x="896" y="860" class="axis">26</text>
+
+  <!-- Modules -->
+  <rect x="730" y="230" width="250" height="180" class="mod" fill="#ffd9b8"/>
+  <text x="748" y="264" class="txt">D1 Mini (ESP8266)</text>
+  <text x="748" y="290" class="pin">D1(SCL), D2(SDA), 3V3, 5V, GND</text>
+
+  <rect x="480" y="230" width="200" height="150" class="mod" fill="#fff4b5"/>
+  <text x="500" y="264" class="txt">ADS1115</text>
+  <text x="500" y="290" class="pin">A0, SCL, SDA, VDD, GND</text>
+  <text x="500" y="312" class="pin">ADDR -> GND (0x48)</text>
+
+  <rect x="360" y="470" width="300" height="190" class="mod" fill="#e9d5ff"/>
+  <text x="380" y="505" class="txt">4-20 mA Receiver</text>
+  <text x="380" y="532" class="pin">I+, I-, Vout, GND</text>
+
+  <rect x="180" y="640" width="240" height="180" class="mod" fill="#bfdbfe"/>
+  <text x="200" y="675" class="txt">Boost 5V -> 12V</text>
+  <text x="200" y="702" class="pin">IN+, IN-, OUT+, OUT-</text>
+
+  <rect x="760" y="650" width="220" height="110" class="mod" fill="#c7f0dd"/>
+  <text x="780" y="687" class="txt">Sensor Klemme</text>
+  <text x="780" y="714" class="pin">Braun(+), Blau(-)</text>
+
+  <!-- Nets -->
+  <path d="M850 410 L850 580 L420 580" class="wire5"/>
+  <text x="785" y="572" class="netlbl">5V</text>
+
+  <path d="M825 410 L825 600 L420 600" class="wiregnd"/>
+  <text x="742" y="618" class="netlbl">GND BUS</text>
+
+  <path d="M420 700 L760 700" class="wire12"/>
+  <text x="545" y="690" class="netlbl">12V -> Sensor Braun</text>
+
+  <path d="M980 720 L660 720 L660 560" class="wireloop"/>
+  <text x="820" y="740" class="netlbl">Sensor Blau -> I+</text>
+
+  <path d="M660 550 L700 550 L700 320 L730 320" class="wirei2c"/>
+  <text x="705" y="312" class="netlbl">SCL</text>
+
+  <path d="M660 575 L720 575 L720 350 L730 350" class="wirei2c"/>
+  <text x="725" y="342" class="netlbl">SDA</text>
+
+  <path d="M660 525 L480 525 L480 305" class="wireana"/>
+  <text x="498" y="515" class="netlbl">Vout -> A0</text>
+
+  <path d="M680 285 L730 380" class="wire12"/>
+  <text x="678" y="340" class="netlbl">3V3</text>
+
+  <!-- Track cuts -->
+  <circle cx="450" cy="290" r="6" class="cut"/>
+  <circle cx="450" cy="320" r="6" class="cut"/>
+  <circle cx="450" cy="350" r="6" class="cut"/>
+  <circle cx="330" cy="530" r="6" class="cut"/>
+  <circle cx="330" cy="590" r="6" class="cut"/>
+  <circle cx="330" cy="650" r="6" class="cut"/>
+  <circle cx="690" cy="530" r="6" class="cut"/>
+  <circle cx="690" cy="590" r="6" class="cut"/>
+  <circle cx="690" cy="650" r="6" class="cut"/>
+  <text x="460" y="690" class="note">Rot = Strip-Cuts (Leiterbahn trennen und durchmessen)</text>
+
+  <!-- Legend -->
+  <rect x="1060" y="120" width="220" height="230" rx="10" ry="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="1080" y="150" class="legend">Legende</text>
+  <line x1="1080" y1="175" x2="1130" y2="175" class="wire12"/><text x="1140" y="180" class="note">12V</text>
+  <line x1="1080" y1="200" x2="1130" y2="200" class="wire5"/><text x="1140" y="205" class="note">5V</text>
+  <line x1="1080" y1="225" x2="1130" y2="225" class="wiregnd"/><text x="1140" y="230" class="note">GND</text>
+  <line x1="1080" y1="250" x2="1130" y2="250" class="wireloop"/><text x="1140" y="255" class="note">4-20mA</text>
+  <line x1="1080" y1="275" x2="1130" y2="275" class="wireana"/><text x="1140" y="280" class="note">0-3.3V</text>
+  <line x1="1080" y1="300" x2="1130" y2="300" class="wirei2c"/><text x="1140" y="305" class="note">I2C</text>
+  <circle cx="1105" cy="325" r="6" class="cut"/><text x="1140" y="330" class="note">Track cut</text>
+
+  <text x="80" y="930" class="subtitle">Hinweis: Dieses SVG ist für den manuellen Aufbau optimiert. Für CAD-Fertigung nutze die CSV-Netzliste zusammen mit KiCad/DIYLC.</text>
+</svg>

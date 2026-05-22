@@ -1,0 +1,273 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="1120" viewBox="0 0 1700 1120">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e5e7eb"/>
+    </linearGradient>
+    <linearGradient id="boardGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f2e2b8"/>
+      <stop offset="100%" stop-color="#e8d2a0"/>
+    </linearGradient>
+    <linearGradient id="moduleBlue" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#275c9e"/>
+      <stop offset="100%" stop-color="#1e3f6f"/>
+    </linearGradient>
+    <linearGradient id="moduleBlack" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#262626"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#111827" flood-opacity="0.28"/>
+    </filter>
+    <pattern id="perfHoles" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="none"/>
+      <circle cx="12" cy="12" r="3.4" fill="#fbf8ee" stroke="#8c6a3d" stroke-width="0.7"/>
+    </pattern>
+    <pattern id="copperStrips" width="24" height="24" patternUnits="userSpaceOnUse">
+      <rect width="24" height="24" fill="none"/>
+      <rect x="0" y="10" width="24" height="4" fill="#b07d4f" fill-opacity="0.55"/>
+    </pattern>
+    <style>
+      .title { font: 700 32px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .subtitle { font: 500 16px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .label { font: 700 14px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .tiny { font: 600 11px 'Consolas', 'Courier New', monospace; fill: #334155; }
+      .pin { font: 600 12px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .note { font: 500 13px 'Segoe UI', Arial, sans-serif; fill: #1f2937; }
+      .wire5 { stroke: #f97316; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wire12 { stroke: #dc2626; stroke-width: 4.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireGnd { stroke: #111827; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireI2c { stroke: #ca8a04; stroke-width: 3.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireAna { stroke: #7c3aed; stroke-width: 3.8; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .wireLoop { stroke: #2563eb; stroke-width: 4; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1700" height="1120" fill="url(#bgGrad)"/>
+
+  <text x="46" y="52" class="title">Realistischer Lötplan Streifenraster 75 x 100 mm</text>
+  <text x="46" y="80" class="subtitle">Projekt: D1 Mini + ADS1115 + XL6009 + 4-20mA Empfaenger | Top-View Bauteilseite mit Verdrahtung</text>
+
+  <!-- Main board -->
+  <g filter="url(#softShadow)">
+    <rect x="58" y="110" width="1260" height="930" rx="14" ry="14" fill="url(#boardGrad)" stroke="#7c5a35" stroke-width="2.4"/>
+    <rect x="92" y="146" width="1140" height="840" fill="url(#copperStrips)" opacity="0.45"/>
+    <rect x="92" y="146" width="1140" height="840" fill="url(#perfHoles)"/>
+  </g>
+
+  <!-- axes -->
+  <text x="92" y="132" class="label">Raster: 30 Spalten x 39 Reihen (2.54 mm)</text>
+  <text x="96" y="1016" class="tiny">1</text>
+  <text x="330" y="1016" class="tiny">7</text>
+  <text x="570" y="1016" class="tiny">13</text>
+  <text x="810" y="1016" class="tiny">19</text>
+  <text x="1050" y="1016" class="tiny">25</text>
+  <text x="1220" y="1016" class="tiny">30</text>
+
+  <text x="66" y="170" class="tiny">A</text>
+  <text x="66" y="266" class="tiny">E</text>
+  <text x="66" y="362" class="tiny">I</text>
+  <text x="66" y="458" class="tiny">M</text>
+  <text x="66" y="554" class="tiny">Q</text>
+  <text x="66" y="650" class="tiny">U</text>
+  <text x="66" y="746" class="tiny">Y</text>
+  <text x="58" y="842" class="tiny">AC</text>
+  <text x="58" y="938" class="tiny">AG</text>
+
+  <!-- D1 mini module -->
+  <g filter="url(#softShadow)">
+    <rect x="890" y="246" width="300" height="214" rx="10" ry="10" fill="url(#moduleBlue)" stroke="#102a4a" stroke-width="2"/>
+    <rect x="955" y="273" width="170" height="130" rx="8" ry="8" fill="url(#moduleBlack)"/>
+    <text x="972" y="342" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="20" font-weight="700">A-Delivery</text>
+    <text x="990" y="364" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="15" font-weight="600">ESP8266MOD</text>
+    <text x="910" y="270" fill="#dbeafe" font-family="Segoe UI, Arial" font-size="12" font-weight="600">D1 Mini</text>
+
+    <!-- pins left -->
+    <circle cx="910" cy="296" r="4" fill="#d1d5db"/><circle cx="910" cy="320" r="4" fill="#d1d5db"/>
+    <circle cx="910" cy="344" r="4" fill="#d1d5db"/><circle cx="910" cy="368" r="4" fill="#d1d5db"/>
+    <circle cx="910" cy="392" r="4" fill="#d1d5db"/><circle cx="910" cy="416" r="4" fill="#d1d5db"/>
+    <circle cx="910" cy="440" r="4" fill="#d1d5db"/>
+    <text x="920" y="299" class="pin" fill="#e5e7eb">RST</text>
+    <text x="920" y="323" class="pin" fill="#e5e7eb">A0</text>
+    <text x="920" y="347" class="pin" fill="#e5e7eb">D0</text>
+    <text x="920" y="371" class="pin" fill="#e5e7eb">D5</text>
+    <text x="920" y="395" class="pin" fill="#e5e7eb">D6</text>
+    <text x="920" y="419" class="pin" fill="#e5e7eb">D7</text>
+    <text x="920" y="443" class="pin" fill="#e5e7eb">D8</text>
+
+    <!-- pins right -->
+    <circle cx="1170" cy="296" r="4" fill="#d1d5db"/><circle cx="1170" cy="320" r="4" fill="#d1d5db"/>
+    <circle cx="1170" cy="344" r="4" fill="#d1d5db"/><circle cx="1170" cy="368" r="4" fill="#d1d5db"/>
+    <circle cx="1170" cy="392" r="4" fill="#d1d5db"/><circle cx="1170" cy="416" r="4" fill="#d1d5db"/>
+    <circle cx="1170" cy="440" r="4" fill="#d1d5db"/>
+    <text x="1090" y="299" class="pin" fill="#e5e7eb">TX</text>
+    <text x="1090" y="323" class="pin" fill="#e5e7eb">RX</text>
+    <text x="1084" y="347" class="pin" fill="#e5e7eb">D1</text>
+    <text x="1084" y="371" class="pin" fill="#e5e7eb">D2</text>
+    <text x="1084" y="395" class="pin" fill="#e5e7eb">D3</text>
+    <text x="1084" y="419" class="pin" fill="#e5e7eb">D4</text>
+    <text x="1078" y="443" class="pin" fill="#e5e7eb">3V3/5V/G</text>
+  </g>
+
+  <!-- ADS1115 -->
+  <g filter="url(#softShadow)">
+    <rect x="660" y="252" width="178" height="258" rx="10" ry="10" fill="url(#moduleBlue)" stroke="#163d66" stroke-width="2"/>
+    <text x="684" y="280" fill="#e5e7eb" font-family="Segoe UI, Arial" font-size="16" font-weight="700">ADS1115</text>
+    <text x="678" y="302" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="12">16 Bit I2C ADC</text>
+
+    <circle cx="682" cy="328" r="4" fill="#d1d5db"/><text x="694" y="332" class="pin" fill="#e5e7eb">VDD</text>
+    <circle cx="682" cy="352" r="4" fill="#d1d5db"/><text x="694" y="356" class="pin" fill="#e5e7eb">GND</text>
+    <circle cx="682" cy="376" r="4" fill="#d1d5db"/><text x="694" y="380" class="pin" fill="#e5e7eb">SCL</text>
+    <circle cx="682" cy="400" r="4" fill="#d1d5db"/><text x="694" y="404" class="pin" fill="#e5e7eb">SDA</text>
+    <circle cx="682" cy="424" r="4" fill="#d1d5db"/><text x="694" y="428" class="pin" fill="#e5e7eb">ADDR</text>
+    <circle cx="682" cy="448" r="4" fill="#d1d5db"/><text x="694" y="452" class="pin" fill="#e5e7eb">ALRT</text>
+
+    <circle cx="816" cy="424" r="4" fill="#d1d5db"/><text x="788" y="428" class="pin" fill="#e5e7eb">A0</text>
+    <circle cx="816" cy="448" r="4" fill="#d1d5db"/><text x="788" y="452" class="pin" fill="#e5e7eb">A1</text>
+    <circle cx="816" cy="472" r="4" fill="#d1d5db"/><text x="788" y="476" class="pin" fill="#e5e7eb">A2</text>
+    <circle cx="816" cy="496" r="4" fill="#d1d5db"/><text x="788" y="500" class="pin" fill="#e5e7eb">A3</text>
+  </g>
+
+  <!-- 4-20mA Receiver -->
+  <g filter="url(#softShadow)">
+    <rect x="476" y="560" width="318" height="238" rx="10" ry="10" fill="url(#moduleBlue)" stroke="#163d66" stroke-width="2"/>
+    <text x="502" y="590" fill="#e5e7eb" font-family="Segoe UI, Arial" font-size="16" font-weight="700">4-20mA Receiver</text>
+    <text x="502" y="612" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="12">ZERO/SPAN Trimmer, VCC/VOUT/GND, I+/I-</text>
+
+    <rect x="505" y="636" width="262" height="34" rx="6" ry="6" fill="#0f172a"/>
+    <text x="514" y="658" fill="#d1d5db" font-family="Consolas, monospace" font-size="12">VCC   VOUT   GND</text>
+
+    <rect x="540" y="718" width="190" height="44" rx="6" ry="6" fill="#111827"/>
+    <text x="564" y="744" fill="#d1d5db" font-family="Consolas, monospace" font-size="12">I+      I-</text>
+  </g>
+
+  <!-- XL6009 -->
+  <g filter="url(#softShadow)">
+    <rect x="204" y="628" width="214" height="308" rx="10" ry="10" fill="url(#moduleBlue)" stroke="#163d66" stroke-width="2"/>
+    <text x="242" y="658" fill="#e5e7eb" font-family="Segoe UI, Arial" font-size="16" font-weight="700">XL6009</text>
+    <text x="226" y="678" fill="#d1d5db" font-family="Segoe UI, Arial" font-size="12">Boost Converter 5V to 12V</text>
+
+    <circle cx="228" cy="704" r="6" fill="#d1d5db"/><text x="246" y="709" class="pin" fill="#e5e7eb">IN+</text>
+    <circle cx="394" cy="704" r="6" fill="#d1d5db"/><text x="336" y="709" class="pin" fill="#e5e7eb">IN-</text>
+    <circle cx="228" cy="910" r="6" fill="#d1d5db"/><text x="246" y="915" class="pin" fill="#e5e7eb">OUT+</text>
+    <circle cx="394" cy="910" r="6" fill="#d1d5db"/><text x="329" y="915" class="pin" fill="#e5e7eb">OUT-</text>
+  </g>
+
+  <!-- Sensor terminal -->
+  <g filter="url(#softShadow)">
+    <rect x="910" y="680" width="224" height="122" rx="9" ry="9" fill="#c7f0dd" stroke="#2f855a" stroke-width="2"/>
+    <text x="936" y="712" class="label" fill="#14532d">Sensor Klemme</text>
+    <text x="936" y="736" class="pin" fill="#14532d">Braun (+12V)</text>
+    <text x="936" y="758" class="pin" fill="#14532d">Blau (Loop -)</text>
+  </g>
+
+  <!-- Service pads -->
+  <g filter="url(#softShadow)">
+    <rect x="1238" y="520" width="370" height="420" rx="10" ry="10" fill="#ffffff" stroke="#94a3b8" stroke-width="1.7"/>
+    <text x="1262" y="553" class="label">Service Header (alle freien Pins)</text>
+    <text x="1262" y="579" class="note">RST, A0, D0, D3, D4, D5, D6, D7, D8, TX, RX, ALRT, A1, A2, A3, GND</text>
+
+    <g fill="#111827">
+      <circle cx="1268" cy="610" r="4"/><circle cx="1292" cy="610" r="4"/><circle cx="1316" cy="610" r="4"/><circle cx="1340" cy="610" r="4"/>
+      <circle cx="1364" cy="610" r="4"/><circle cx="1388" cy="610" r="4"/><circle cx="1412" cy="610" r="4"/><circle cx="1436" cy="610" r="4"/>
+      <circle cx="1460" cy="610" r="4"/><circle cx="1484" cy="610" r="4"/><circle cx="1508" cy="610" r="4"/><circle cx="1532" cy="610" r="4"/>
+      <circle cx="1556" cy="610" r="4"/><circle cx="1580" cy="610" r="4"/><circle cx="1268" cy="634" r="4"/><circle cx="1292" cy="634" r="4"/>
+    </g>
+  </g>
+
+  <!-- Wiring -->
+  <path d="M1114 444 L1114 694 L232 694" class="wire5"/>
+  <text x="1048" y="684" class="tiny">5V_BUS</text>
+
+  <path d="M1144 444 L1144 726 L395 726" class="wireGnd"/>
+  <text x="992" y="748" class="tiny">GND_BUS</text>
+
+  <path d="M232 910 L932 910" class="wire12"/>
+  <path d="M932 910 L932 734" class="wire12"/>
+  <path d="M932 910 L510 652" class="wire12"/>
+  <text x="566" y="898" class="tiny">12V_BUS</text>
+
+  <path d="M932 758 L610 740" class="wireLoop"/>
+  <text x="780" y="776" class="tiny">LOOP_IN</text>
+
+  <path d="M595 652 L812 424" class="wireAna"/>
+  <text x="666" y="538" class="tiny">ANALOG_IN VOUT->A0</text>
+
+  <path d="M1086 344 L684 376" class="wireI2c"/>
+  <path d="M1086 368 L684 400" class="wireI2c"/>
+  <text x="886" y="326" class="tiny">I2C SCL/SDA</text>
+
+  <path d="M1092 440 L682 328" class="wire12"/>
+  <text x="904" y="414" class="tiny">3V3_BUS</text>
+
+  <path d="M682 424 L760 726" class="wireGnd"/>
+  <text x="690" y="470" class="tiny">ADDR->GND</text>
+
+  <path d="M394 910 L760 726" class="wireGnd"/>
+  <path d="M610 742 L760 726" class="wireGnd"/>
+  <text x="438" y="866" class="tiny">Receiver I- and GND to bus</text>
+
+  <!-- Track cuts markers -->
+  <g>
+    <circle cx="770" cy="302" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="770" cy="350" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="770" cy="398" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+
+    <circle cx="452" cy="634" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="452" cy="682" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="452" cy="730" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+
+    <circle cx="818" cy="634" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="818" cy="682" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="818" cy="730" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+
+    <circle cx="428" cy="814" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="428" cy="862" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+    <circle cx="428" cy="910" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/>
+  </g>
+
+  <!-- Copper side inset -->
+  <g filter="url(#softShadow)">
+    <rect x="1240" y="110" width="370" height="370" rx="10" ry="10" fill="#fff7ed" stroke="#c2410c" stroke-width="1.6"/>
+    <text x="1262" y="141" class="label">Loetseite (Kupfer, Unterseite)</text>
+    <rect x="1264" y="160" width="322" height="298" fill="#f8e7ca" stroke="#8b5e34" stroke-width="1"/>
+
+    <g stroke="#b07d4f" stroke-width="3" opacity="0.8">
+      <line x1="1272" y1="182" x2="1578" y2="182"/>
+      <line x1="1272" y1="206" x2="1578" y2="206"/>
+      <line x1="1272" y1="230" x2="1578" y2="230"/>
+      <line x1="1272" y1="254" x2="1578" y2="254"/>
+      <line x1="1272" y1="278" x2="1578" y2="278"/>
+      <line x1="1272" y1="302" x2="1578" y2="302"/>
+      <line x1="1272" y1="326" x2="1578" y2="326"/>
+      <line x1="1272" y1="350" x2="1578" y2="350"/>
+      <line x1="1272" y1="374" x2="1578" y2="374"/>
+      <line x1="1272" y1="398" x2="1578" y2="398"/>
+      <line x1="1272" y1="422" x2="1578" y2="422"/>
+    </g>
+
+    <g>
+      <line x1="1410" y1="176" x2="1416" y2="188" stroke="#dc2626" stroke-width="3"/>
+      <line x1="1416" y1="176" x2="1410" y2="188" stroke="#dc2626" stroke-width="3"/>
+      <line x1="1370" y1="248" x2="1376" y2="260" stroke="#dc2626" stroke-width="3"/>
+      <line x1="1376" y1="248" x2="1370" y2="260" stroke="#dc2626" stroke-width="3"/>
+      <line x1="1510" y1="296" x2="1516" y2="308" stroke="#dc2626" stroke-width="3"/>
+      <line x1="1516" y1="296" x2="1510" y2="308" stroke="#dc2626" stroke-width="3"/>
+    </g>
+
+    <text x="1262" y="475" class="note">Rote X markieren Leiterbahn-Cuts auf der Unterseite.</text>
+  </g>
+
+  <!-- Legend -->
+  <g filter="url(#softShadow)">
+    <rect x="76" y="1048" width="1534" height="52" rx="8" ry="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.4"/>
+    <line x1="100" y1="1074" x2="146" y2="1074" class="wire12"/><text x="154" y="1078" class="note">12V</text>
+    <line x1="250" y1="1074" x2="296" y2="1074" class="wire5"/><text x="304" y="1078" class="note">5V</text>
+    <line x1="390" y1="1074" x2="436" y2="1074" class="wireGnd"/><text x="444" y="1078" class="note">GND</text>
+    <line x1="540" y1="1074" x2="586" y2="1074" class="wireI2c"/><text x="594" y="1078" class="note">I2C</text>
+    <line x1="690" y1="1074" x2="736" y2="1074" class="wireAna"/><text x="744" y="1078" class="note">0-3.3V Analog</text>
+    <line x1="920" y1="1074" x2="966" y2="1074" class="wireLoop"/><text x="974" y="1078" class="note">4-20mA Loop</text>
+    <circle cx="1184" cy="1074" r="7" fill="#ef4444" stroke="#7f1d1d" stroke-width="1"/><text x="1198" y="1078" class="note">Track-Cut</text>
+    <text x="1378" y="1078" class="note">Hinweis: Vor Inbetriebnahme alle Nets mit Multimeter pruefen.</text>
+  </g>
+</svg>
