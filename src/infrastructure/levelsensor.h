@@ -16,6 +16,7 @@ public:
 private:
 #if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
   Adafruit_ADS1115 _ads;
+  bool _ready = false;
 #endif
 };
 

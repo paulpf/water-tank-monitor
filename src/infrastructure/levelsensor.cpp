@@ -32,11 +32,15 @@ static float interpolateLevel(float voltage)
 bool LevelSensor::setup()
 {
   _ads.setGain(GAIN_ONE);
-  return _ads.begin(SENSOR_ADS_I2C_ADDR);
+  _ready = _ads.begin(SENSOR_ADS_I2C_ADDR);
+  return _ready;
 }
 
 TankLevel LevelSensor::read()
 {
+  if (!_ready)
+    return TankLevel{0.0f, 0.0f};
+
   int16_t raw    = _ads.readADC_SingleEnded(SENSOR_ADS_CHANNEL);
   float voltage  = _ads.computeVolts(raw);
   float currentMa    = (voltage / SENSOR_VREF) * 16.0f + 4.0f;
