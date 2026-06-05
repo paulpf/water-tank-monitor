@@ -62,6 +62,9 @@ void Application::loop()
   if (mqttConnectedNow && !_mqttWasConnected)
   {
     Trace::log(TraceLevel::INFO, "MQTT connected - publishing initial values");
+    char ipBuf[16];
+    WiFi.localIP().toString().toCharArray(ipBuf, sizeof(ipBuf));
+    _mqttManager.publishRetained(MQTT_TOPIC_IP, ipBuf);
     readAndPublishLevel();
     _lastSensorRead = currentTime;
   }

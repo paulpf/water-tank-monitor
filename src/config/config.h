@@ -49,17 +49,18 @@ constexpr uint32_t MQTT_RETRY_INTERVAL_MS  = 5000;
 #define MQTT_TOPIC_LEVEL_PERCENT  DEVICE_NAME "/tank/levelPercent"
 #define MQTT_TOPIC_CURRENT_MA     DEVICE_NAME "/tank/currentMa"
 #define MQTT_TOPIC_RSSI           DEVICE_NAME "/system/rssi"
+#define MQTT_TOPIC_IP             DEVICE_NAME "/system/ip"
 constexpr uint32_t MQTT_RSSI_INTERVAL_MS = 5000;
 
 // TL-136 4-20mA level sensor via signal conditioner + ADS1115 (I2C, 16-bit ADC)
-// Hardware: USB 5V → Boost converter → 12V loop → TL-136 → 4-20mA receiver
+// Hardware: USB 5V → Boost converter → 24V loop → TL-136 → 4-20mA receiver
 //           → ADS1115 A0 (I2C) → D1 Mini D1/SCL + D2/SDA
 // Signal conditioner calibrated: 4mA → 0V, 20mA → 3.3V (SPAN/ZERO trimmer)
 // ADS1115: ADDR pin to GND → I2C address 0x48
 //          GAIN_ONE = ±4.096V range → covers 0–3.3V with 0.125 mV resolution
 constexpr uint8_t  SENSOR_ADS_I2C_ADDR    = 0x48;
 constexpr uint8_t  SENSOR_ADS_CHANNEL     = 0;      // ADS1115 A0
-constexpr float    SENSOR_VREF            = 3.3f;   // signal conditioner max output [V]
+constexpr float    SENSOR_VREF            = 3.153f; // signal conditioner measured max output [V]
 constexpr uint32_t SENSOR_READ_INTERVAL_MS = 60000;
 
 // Piecewise linear calibration table: { voltage [V], actual fill level [%] }
@@ -69,7 +70,7 @@ struct SensorCalPoint { float voltageV; float actualPercent; };
 constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
     { 0.00f,  0.0f },   // 4 mA  — empty tank (ZERO trimmer, measured)
     { 2.09f, 71.0f },   // measured reference point
-    { 2.94f, 100.0f },  // 20 mA — full tank (calculated, replace with measured value!)
+    { 3.153f, 100.0f }, // 20 mA — full tank (measured SPAN trimmer maximum)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));
