@@ -61,7 +61,7 @@ constexpr uint32_t MQTT_RSSI_INTERVAL_MS = 5000;
 constexpr uint8_t  SENSOR_ADS_I2C_ADDR    = 0x48;
 constexpr uint8_t  SENSOR_ADS_CHANNEL     = 0;      // ADS1115 A0
 constexpr float    SENSOR_VREF            = 3.153f; // signal conditioner measured max output [V]
-constexpr uint32_t SENSOR_READ_INTERVAL_MS = 60000;
+constexpr uint32_t SENSOR_READ_INTERVAL_MS = 500;
 
 // Piecewise linear calibration table: { voltage [V], actual fill level [%] }
 // Points must be sorted by voltage (ascending).

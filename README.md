@@ -34,36 +34,15 @@ WiFi-Konnektivität und OTA-Updates sind eingebaut.
 
 ---
 
-## Verdrahtung
+## Platinenlayout / Verdrahtung
 
-> Verdrahtungsdiagramm (draw.io): [docs/wiring.drawio](docs/wiring.drawio)
-> Öffnen mit [draw.io Desktop](https://github.com/jgraph/drawio-desktop/releases) oder [app.diagrams.net](https://app.diagrams.net).
+Bestückung und Brücken
 
-### Schaltplan (ASCII)
+![alt text](docs/pics/Sketch_Steckplatine.png)
 
-```
-              Micro-USB
-                  │
-            [D1 Mini]
-            │        │
-           5V        GND ──────────────────────────────┐
-            │                                          │
-            └──── [Boost-Converter] ── 24V ── TL-136(+)│
-                        │                       │      │
-                       GND             [TL-136 Sensor] │
-                        │                       │      │
-                        │               TL-136(–)Blau  │
-                        │                       │      │
-                        │           [4-20mA Empfänger] │
-                        │                  │    │      │
-                        │            Vout(0–3,3V)      │
-                        │                  │    GND ───┤
-                        │            [ADS1115]          │
-                        │            │    │    GND ───┤
-                        └────────────┘    │           │
-                          SCL/SDA     gemeinsame      │
-                         [D1 Mini D1/D2]  GND-Schiene ┘
-```
+Trennungsstellen der Leiterbahnen (Cut-Lines) auf der Platine
+
+![alt text](docs/pics/layout_cuts.png)
 
 ### Klemmbelegung Schritt für Schritt
 
