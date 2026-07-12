@@ -8,6 +8,7 @@
 #include "levelsensor.h"
 #include "mqttmanager.h"
 #include "connectivitycoordinator.h"
+#include "watchdog.h"
 
 class Bootstrap
 {
@@ -22,6 +23,7 @@ private:
   LevelSensor _levelSensor;
   MqttManager _mqttManager;
   ConnectivityCoordinator _connectivityCoordinator;
+  Watchdog _watchdog;
   Application _app;
 };
 

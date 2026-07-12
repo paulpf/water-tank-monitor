@@ -4,7 +4,10 @@
 struct TankLevel
 {
   float currentMa;
+  float voltageV;
   float levelPercent;
+  float heightCm;
+  float volumeLiters;
 
   // Outside 4-20mA range indicates wiring fault or sensor error
   bool isValid() const

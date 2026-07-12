@@ -3,7 +3,8 @@
 
 MqttManager::MqttManager()
     : _mqttServer(nullptr), _mqttPort(1883), _mqttUser(nullptr),
-      _mqttPassword(nullptr), _clientId(nullptr), _connectRequested(false)
+      _mqttPassword(nullptr), _clientId(nullptr), _connectRequested(false),
+      _subscribeCount(0)
 {
   _pubSubClient.setClient(_wifiClient);
 }
@@ -62,6 +63,11 @@ void MqttManager::reconnect()
     Trace::log(TraceLevel::INFO, "MQTT connected");
     _sessionManager.onConnectSuccess();
     _pubSubClient.publish(getLwtTopic(), "online", true);
+
+    for (int i = 0; i < _subscribeCount; i++)
+    {
+      _pubSubClient.subscribe(_subscribeTopics[i]);
+    }
   }
   else
   {
@@ -110,6 +116,19 @@ void MqttManager::forceDisconnect()
     _pubSubClient.disconnect();
   }
   _sessionManager.forceDisconnect();
+}
+
+void MqttManager::subscribe(const char *topic)
+{
+  if (_subscribeCount < MAX_SUBSCRIPTIONS)
+  {
+    _subscribeTopics[_subscribeCount++] = topic;
+  }
+}
+
+void MqttManager::setCallback(std::function<void(char *, uint8_t *, unsigned int)> callback)
+{
+  _pubSubClient.setCallback(callback);
 }
 
 const char *MqttManager::getLwtTopic() const

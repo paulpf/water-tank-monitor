@@ -6,6 +6,7 @@
 #include "mqttsessionmanager.h"
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <functional>
 
 class MqttManager : public IMessagePublisher, public IMqttConnectionControl
 {
@@ -23,6 +24,10 @@ public:
   void requestConnect() override;
   void forceDisconnect() override;
 
+  // Re-subscribed automatically on every (re)connect
+  void subscribe(const char *topic);
+  void setCallback(std::function<void(char *, uint8_t *, unsigned int)> callback);
+
 private:
   void reconnect();
   const char *getLwtTopic() const;
@@ -33,6 +38,10 @@ private:
   const char *_mqttPassword;
   const char *_clientId;
   bool _connectRequested;
+
+  static const int MAX_SUBSCRIPTIONS = 4;
+  const char *_subscribeTopics[MAX_SUBSCRIPTIONS];
+  int _subscribeCount;
 
   WiFiClient _wifiClient;
   PubSubClient _pubSubClient;

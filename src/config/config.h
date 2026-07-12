@@ -46,10 +46,23 @@ constexpr uint32_t STATUS_PRINT_INTERVAL_MS = 30000;
 
 // MQTT configuration
 constexpr uint32_t MQTT_RETRY_INTERVAL_MS  = 5000;
-#define MQTT_TOPIC_LEVEL_PERCENT  DEVICE_NAME "/tank/levelPercent"
-#define MQTT_TOPIC_CURRENT_MA     DEVICE_NAME "/tank/currentMa"
-#define MQTT_TOPIC_RSSI           DEVICE_NAME "/system/rssi"
-#define MQTT_TOPIC_IP             DEVICE_NAME "/system/ip"
+#define MQTT_TOPIC_LEVEL_PERCENT       DEVICE_NAME "/tank/levelPercent"
+#define MQTT_TOPIC_HEIGHT_CM           DEVICE_NAME "/tank/heightCm"
+#define MQTT_TOPIC_VOLUME_LITERS       DEVICE_NAME "/tank/volumeLiters"
+#define MQTT_TOPIC_CURRENT_MA          DEVICE_NAME "/tank/currentMa"
+#define MQTT_TOPIC_VOLTAGE_V           DEVICE_NAME "/tank/voltageV"
+#define MQTT_TOPIC_VALID               DEVICE_NAME "/tank/valid"
+#define MQTT_TOPIC_READ_INTERVAL_MS    DEVICE_NAME "/config/readIntervalMs"        // state (retained, device publishes)
+#define MQTT_TOPIC_READ_INTERVAL_SET   DEVICE_NAME "/config/readIntervalMs/set"    // command (write here to change it)
+#define MQTT_TOPIC_PUBLISH_INTERVAL_MS  DEVICE_NAME "/config/publishIntervalMs"     // state (retained, device publishes)
+#define MQTT_TOPIC_PUBLISH_INTERVAL_SET DEVICE_NAME "/config/publishIntervalMs/set" // command (write here to change it)
+#define MQTT_TOPIC_CALIBRATION_MODE     DEVICE_NAME "/config/calibrationMode"       // state (retained, "1"/"0")
+#define MQTT_TOPIC_CALIBRATION_MODE_SET DEVICE_NAME "/config/calibrationMode/set"   // command ("1"=on, "0"=off)
+constexpr uint32_t CALIBRATION_INTERVAL_MS = 500; // read+publish cadence while calibrationMode is on
+#define MQTT_TOPIC_RSSI                DEVICE_NAME "/system/rssi"
+#define MQTT_TOPIC_IP                  DEVICE_NAME "/system/ip"
+#define MQTT_TOPIC_HEALTH              DEVICE_NAME "/system/health"  // JSON: sensor + system diagnostics
+#define MQTT_TOPIC_COMMAND_RESET       DEVICE_NAME "/command/reset"  // any payload triggers ESP.restart()
 constexpr uint32_t MQTT_RSSI_INTERVAL_MS = 5000;
 
 // TL-136 4-20mA level sensor via signal conditioner + ADS1115 (I2C, 16-bit ADC)
@@ -58,19 +71,35 @@ constexpr uint32_t MQTT_RSSI_INTERVAL_MS = 5000;
 // Signal conditioner calibrated: 4mA → 0V, 20mA → 3.3V (SPAN/ZERO trimmer)
 // ADS1115: ADDR pin to GND → I2C address 0x48
 //          GAIN_ONE = ±4.096V range → covers 0–3.3V with 0.125 mV resolution
-constexpr uint8_t  SENSOR_ADS_I2C_ADDR    = 0x48;
-constexpr uint8_t  SENSOR_ADS_CHANNEL     = 0;      // ADS1115 A0
-constexpr float    SENSOR_VREF            = 3.153f; // signal conditioner measured max output [V]
-constexpr uint32_t SENSOR_READ_INTERVAL_MS = 500;
+constexpr uint8_t  SENSOR_ADS_I2C_ADDR      = 0x48;
+constexpr uint8_t  SENSOR_ADS_CHANNEL       = 0;      // ADS1115 A0
+constexpr float    SENSOR_VREF              = 3.153f; // signal conditioner measured max output [V]
+constexpr uint32_t SENSOR_READ_INTERVAL_MS  = 500;     // Default read cadence (calibration); runtime value lives in SystemConfig.sensorReadIntervalMs
+constexpr uint32_t MQTT_PUBLISH_INTERVAL_MS = 1000;    // Default publish cadence; runtime value lives in SystemConfig.publishIntervalMs
+
+// Tank geometry (Zisterne Family F 6500)
+// Cylinder: 0–198 cm, r=1.0m
+// Cone: 198–206 cm (8 cm height)
+// Empty (0%): 13 cm height = 408 Liters (sensor position, prevents clogging)
+// Full (100%): 206 cm height = 6500 Liters (drain outlet level)
+// Critical: 266 cm height (electrical socket danger point)
+constexpr float TANK_CYLINDER_HEIGHT_CM = 198.0f;
+constexpr float TANK_CONE_START_CM      = 198.0f;
+constexpr float TANK_CONE_END_CM        = 206.0f;
+constexpr float TANK_RADIUS_M           = 1.0f;
+constexpr float TANK_MIN_HEIGHT_CM      = 13.0f;    // Sensor position (0%)
+constexpr float TANK_DRAIN_HEIGHT_CM    = 206.0f;   // Drain outlet (100% normal operation)
+constexpr float TANK_CRITICAL_HEIGHT_CM = 250.0f;   // Electrical socket danger point
 
 // Piecewise linear calibration table: { voltage [V], actual fill level [%] }
+// Tank: 13 cm (4mA) = 0%, 206 cm (20mA) = 100%
+// Measured reference point: 108 cm = 12.13 mA = 1.602 V = 49.2%
 // Points must be sorted by voltage (ascending).
-// Add more points for better accuracy — two points minimum.
 struct SensorCalPoint { float voltageV; float actualPercent; };
 constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
-    { 0.00f,  0.0f },   // 4 mA  — empty tank (ZERO trimmer, measured)
-    { 2.09f, 71.0f },   // measured reference point
-    { 3.153f, 100.0f }, // 20 mA — full tank (measured SPAN trimmer maximum)
+    { 0.000f,  0.0f },    // 4 mA  = 13 cm = 0% (empty)
+    { 1.602f, 49.2f },    // 12.13 mA = 108 cm = 49.2% (measured reference)
+    { 3.153f, 100.0f },   // 20 mA = 206 cm = 100% (full, drain outlet)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));

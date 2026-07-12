@@ -12,6 +12,7 @@ class LevelSensor : public ILevelSensor
 public:
   bool setup() override;
   TankLevel read() override;
+  bool isReady() const override;
 
 private:
 #if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
