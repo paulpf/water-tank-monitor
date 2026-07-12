@@ -25,6 +25,12 @@ void WifiManager::setup(String ssid, String password, String clientName)
   // Kick off first connect explicitly.
   // We do not rely on implicit connect behavior or event ordering side effects.
   WiFi.begin(_ssid.c_str(), _password.c_str());
+
+  // Default modem sleep delays responses (ping, OTA UDP invite, MQTT) between
+  // beacon intervals - this device is mains-powered, so trade power for latency.
+  // Set after begin(): applying it before the connection handshake has been
+  // observed to interfere with association on some ESP8266 core versions.
+  WiFi.setSleepMode(WIFI_NONE_SLEEP);
   _wifiConnectStartTime = millis();
   _wifiState = WIFI_CONNECTING;
   _nextReconnectAttemptTime = _wifiConnectStartTime;
