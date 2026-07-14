@@ -91,15 +91,18 @@ constexpr float TANK_MIN_HEIGHT_CM      = 13.0f;    // Sensor position (0%)
 constexpr float TANK_DRAIN_HEIGHT_CM    = 206.0f;   // Drain outlet (100% normal operation)
 constexpr float TANK_CRITICAL_HEIGHT_CM = 250.0f;   // Electrical socket danger point
 
-// Piecewise linear calibration table: { voltage [V], actual fill level [%] }
-// Tank: 13 cm (4mA) = 0%, 206 cm (20mA) = 100%
-// Measured reference point: 108 cm = 12.13 mA = 1.602 V = 49.2%
-// Points must be sorted by voltage (ascending).
-struct SensorCalPoint { float voltageV; float actualPercent; };
+struct SensorCalPoint { float voltageV; float heightAboveSensorCm; };
 constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
-    { 0.000f,  0.0f },    // 4 mA  = 13 cm = 0% (empty)
-    { 1.602f, 49.2f },    // 12.13 mA = 108 cm = 49.2% (measured reference)
-    { 3.153f, 100.0f },   // 20 mA = 206 cm = 100% (full, drain outlet)
+    { 0.000f,  0.0f },    // 0 V  = 0 cm
+    { 0.2277f, 20.0f },   // 0,2277 V = 20 cm water column (direct measurement)
+    { 0.4554f, 40.0f },   // 0,4554 V = 40 cm water column (direct measurement)
+    { 0.6831f, 60.0f },   // 0,6831 V = 60 cm water column (direct measurement)
+    { 0.9108f, 80.0f },   // 0,9108 V = 80 cm water column (direct measurement)
+    { 1.1385f, 100.0f },  // 1,1385 V = 100 cm water column (direct measurement)
+    { 1.3662f, 120.0f },  // 1,3662 V = 120 cm water column (direct measurement)
+    { 1.5939f, 140.0f },  // 1,5939 V = 140 cm water column (direct measurement)
+    { 1.8216f, 160.0f },  // 1,8216 V = 160 cm water column (direct measurement)
+    { 2.0493f, 180.0f },  // 2,0493 V = 180 cm water column (direct measurement)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));

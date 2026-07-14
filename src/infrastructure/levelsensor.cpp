@@ -1,35 +1,35 @@
 #include "levelsensor.h"
 #include "config.h"
 
-static float interpolateLevel(float voltage)
+static float interpolateHeightAboveSensor(float voltage)
 {
   const int n = SENSOR_CAL_TABLE_SIZE;
 
   if (voltage <= SENSOR_CAL_TABLE[0].voltageV)
-    return SENSOR_CAL_TABLE[0].actualPercent;
+    return SENSOR_CAL_TABLE[0].heightAboveSensorCm;
 
   if (voltage >= SENSOR_CAL_TABLE[n - 1].voltageV)
-    return SENSOR_CAL_TABLE[n - 1].actualPercent;
+    return SENSOR_CAL_TABLE[n - 1].heightAboveSensorCm;
 
   for (int i = 1; i < n; i++)
   {
     if (voltage <= SENSOR_CAL_TABLE[i].voltageV)
     {
       float v0 = SENSOR_CAL_TABLE[i - 1].voltageV;
-      float p0 = SENSOR_CAL_TABLE[i - 1].actualPercent;
+      float h0 = SENSOR_CAL_TABLE[i - 1].heightAboveSensorCm;
       float v1 = SENSOR_CAL_TABLE[i].voltageV;
-      float p1 = SENSOR_CAL_TABLE[i].actualPercent;
+      float h1 = SENSOR_CAL_TABLE[i].heightAboveSensorCm;
       float t  = (voltage - v0) / (v1 - v0);
-      return p0 + t * (p1 - p0);
+      return h0 + t * (h1 - h0);
     }
   }
 
-  return SENSOR_CAL_TABLE[n - 1].actualPercent;
+  return SENSOR_CAL_TABLE[n - 1].heightAboveSensorCm;
 }
 
-static float percentToHeight(float levelPercent)
+static float heightAboveSensorToPercent(float heightAboveSensorCm)
 {
-  return TANK_MIN_HEIGHT_CM + (levelPercent / 100.0f) * (TANK_DRAIN_HEIGHT_CM - TANK_MIN_HEIGHT_CM);
+  return (heightAboveSensorCm / (TANK_DRAIN_HEIGHT_CM - TANK_MIN_HEIGHT_CM)) * 100.0f;
 }
 
 static float heightToVolume(float heightCm)
@@ -73,10 +73,11 @@ TankLevel LevelSensor::read()
 
   int16_t raw    = _ads.readADC_SingleEnded(SENSOR_ADS_CHANNEL);
   float voltage  = _ads.computeVolts(raw);
-  float currentMa    = (voltage / SENSOR_VREF) * 16.0f + 4.0f;
-  float levelPercent = interpolateLevel(voltage);
-  float heightCm     = percentToHeight(levelPercent);
-  float volumeLiters = heightToVolume(heightCm);
+  float currentMa          = (voltage / SENSOR_VREF) * 16.0f + 4.0f;
+  float heightAboveSensor  = interpolateHeightAboveSensor(voltage);
+  float heightCm           = TANK_MIN_HEIGHT_CM + heightAboveSensor;
+  float levelPercent       = heightAboveSensorToPercent(heightAboveSensor);
+  float volumeLiters       = heightToVolume(heightCm);
 
   return TankLevel{currentMa, voltage, levelPercent, heightCm, volumeLiters};
 }
