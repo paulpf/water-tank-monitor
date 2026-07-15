@@ -95,14 +95,13 @@ struct SensorCalPoint { float voltageV; float heightAboveSensorCm; };
 constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
     { 0.000f,  0.0f },    // 0 V  = 0 cm
     { 0.2277f, 20.0f },   // 0,2277 V = 20 cm water column (direct measurement)
-    { 0.4554f, 40.0f },   // 0,4554 V = 40 cm water column (direct measurement)
-    { 0.6831f, 60.0f },   // 0,6831 V = 60 cm water column (direct measurement)
-    { 0.9108f, 80.0f },   // 0,9108 V = 80 cm water column (direct measurement)
-    { 1.1385f, 100.0f },  // 1,1385 V = 100 cm water column (direct measurement)
-    { 1.3662f, 120.0f },  // 1,3662 V = 120 cm water column (direct measurement)
-    { 1.5939f, 140.0f },  // 1,5939 V = 140 cm water column (direct measurement)
-    { 1.8216f, 160.0f },  // 1,8216 V = 160 cm water column (direct measurement)
-    { 2.0493f, 180.0f },  // 2,0493 V = 180 cm water column (direct measurement)
+    { 0.7585f, 69.0f },  // 0,7585 V = 69 cm water column (direct measurement)
+    { 1.073f, 108.0f },  // 1,073 V = 108 cm water column (direct measurement)
+    { 1.500f, 150.0f },  // 1,500 V = 150 cm water column (direct measurement)
+    { 2.000f, 200.0f },  // 2,000 V = 200 cm water column (direct measurement)
+    { 2.500f, 250.0f },  // 2,500 V = 250 cm water column (direct measurement)
+    { 3.000f, 300.0f },  // 3,000 V = 300 cm water column (direct measurement)
+    { 3.153f, 320.0f }   // 3,153 V = 320 cm water column (direct measurement)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));
