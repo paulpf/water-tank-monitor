@@ -100,6 +100,7 @@ constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
     { 0.000f,  13.0f },   // 0 V = 13 cm (sensor position, no water above sensor)
     { 0.2277f, 20.0f },   // 0,2277 V = 20 cm (direct measurement)
     { 2.2419f, 210.0f },  // 2,2419 V = 210 cm (direct measurement)
+    { 2.3448f, 220.0f },  // 2,3448 V = 220 cm (extrapolated: signal conditioner full-scale output, 20 mA)
     { 3.300f,  309.8f }   // 3,300 V = 309,8 cm (extrapolated: signal conditioner full-scale output, 20 mA)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
