@@ -49,6 +49,7 @@ constexpr uint32_t MQTT_RETRY_INTERVAL_MS  = 5000;
 #define MQTT_TOPIC_LEVEL_PERCENT       DEVICE_NAME "/tank/levelPercent"
 #define MQTT_TOPIC_HEIGHT_CM           DEVICE_NAME "/tank/heightCm"
 #define MQTT_TOPIC_VOLUME_LITERS       DEVICE_NAME "/tank/volumeLiters"
+#define MQTT_TOPIC_VOLUME_OVERFLOW_L   DEVICE_NAME "/tank/volumeOverflowLiters"
 #define MQTT_TOPIC_CURRENT_MA          DEVICE_NAME "/tank/currentMa"
 #define MQTT_TOPIC_VOLTAGE_V           DEVICE_NAME "/tank/voltageV"
 #define MQTT_TOPIC_VALID               DEVICE_NAME "/tank/valid"
@@ -79,29 +80,27 @@ constexpr uint32_t MQTT_PUBLISH_INTERVAL_MS = 1000;    // Default publish cadenc
 
 // Tank geometry (Zisterne Family F 6500)
 // Cylinder: 0–198 cm, r=1.0m
-// Cone: 198–206 cm (8 cm height)
+// Cone: 198–210 cm (12 cm height)
 // Empty (0%): 13 cm height = 408 Liters (sensor position, prevents clogging)
-// Full (100%): 206 cm height = 6500 Liters (drain outlet level)
+// Full (100%): 210 cm height = 6500 Liters (drain outlet level)
 // Critical: 266 cm height (electrical socket danger point)
 constexpr float TANK_CYLINDER_HEIGHT_CM = 198.0f;
 constexpr float TANK_CONE_START_CM      = 198.0f;
-constexpr float TANK_CONE_END_CM        = 206.0f;
+constexpr float TANK_CONE_END_CM        = 210.0f;
 constexpr float TANK_RADIUS_M           = 1.0f;
 constexpr float TANK_MIN_HEIGHT_CM      = 13.0f;    // Sensor position (0%)
-constexpr float TANK_DRAIN_HEIGHT_CM    = 206.0f;   // Drain outlet (100% normal operation)
+constexpr float TANK_DRAIN_HEIGHT_CM    = 210.0f;   // Drain outlet (100% normal operation)
 constexpr float TANK_CRITICAL_HEIGHT_CM = 250.0f;   // Electrical socket danger point
 
-struct SensorCalPoint { float voltageV; float heightAboveSensorCm; };
+// heightCm below is the total physical water height from the tank bottom
+// (matches direct tape-measure readings), not the water column above the
+// sensor - the sensor sits at TANK_MIN_HEIGHT_CM, so 0 V maps there.
+struct SensorCalPoint { float voltageV; float heightCm; };
 constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
-    { 0.000f,  0.0f },    // 0 V  = 0 cm
-    { 0.2277f, 20.0f },   // 0,2277 V = 20 cm water column (direct measurement)
-    { 0.7585f, 69.0f },  // 0,7585 V = 69 cm water column (direct measurement)
-    { 1.073f, 108.0f },  // 1,073 V = 108 cm water column (direct measurement)
-    { 1.500f, 150.0f },  // 1,500 V = 150 cm water column (direct measurement)
-    { 2.000f, 200.0f },  // 2,000 V = 200 cm water column (direct measurement)
-    { 2.500f, 250.0f },  // 2,500 V = 250 cm water column (direct measurement)
-    { 3.000f, 300.0f },  // 3,000 V = 300 cm water column (direct measurement)
-    { 3.153f, 320.0f }   // 3,153 V = 320 cm water column (direct measurement)
+    { 0.000f,  13.0f },   // 0 V = 13 cm (sensor position, no water above sensor)
+    { 0.2277f, 20.0f },   // 0,2277 V = 20 cm (direct measurement)
+    { 2.2419f, 210.0f },  // 2,2419 V = 210 cm (direct measurement)
+    { 3.300f,  309.8f }   // 3,300 V = 309,8 cm (extrapolated: signal conditioner full-scale output, 20 mA)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));

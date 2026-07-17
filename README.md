@@ -376,8 +376,8 @@ Kalibrierungstabelle in `src/config/config.h` ergänzen:
 
 1. Loop-Strom mit Multimeter auf einen bekannten Wert einstellen (z. B. 12 mA = 50 %)
 2. Receiver **VOUT** messen → dieser Spannungswert ist der neue Tabellenpunkt
-3. Tatsächlichen Füllstand (Maßband) notieren
-4. Eintrag in `SENSOR_CAL_TABLE` hinzufügen: `{ gemessene_V, tatsächliche_% }`
+3. Tatsächliche Gesamthöhe ab Tankboden (Maßband) notieren
+4. Eintrag in `SENSOR_CAL_TABLE` hinzufügen: `{ gemessene_V, tatsächliche_Höhe_cm }`
 5. Firmware neu bauen und flashen
 
 Mehr Stützpunkte = genauere Kurve. Punkte müssen aufsteigend nach Spannung sortiert sein.
