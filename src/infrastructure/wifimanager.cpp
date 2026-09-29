@@ -1,13 +1,7 @@
 #include "wifimanager.h"
+#include "config.h"
 #include "reconnectpolicy.h"
-
-WifiManager::WifiManager()
-{
-}
-
-WifiManager::~WifiManager()
-{
-}
+#include "trace.h"
 
 void WifiManager::setup(String ssid, String password, String clientName)
 {
@@ -93,17 +87,8 @@ bool WifiManager::loop()
     _reconnectDelayMs = 0;
   }
 
-  // Fast-path: transition CONNECTING -> CONNECTED as soon as link is up.
-  if (_wifiState == WIFI_CONNECTING && isConnectedNow)
-  {
-    Trace::logf(TraceLevel::DEBUG,
-                "WiFi connected after connection attempt %u",
-                _reconnectAttempt);
-    _wifiState = WIFI_CONNECTED;
-    _reconnectAttempt = 0;
-  }
-  else if (_wifiState == WIFI_DISCONNECTED &&
-           millis() - _lastAttemptTime >= _reconnectDelayMs)
+  if (_wifiState == WIFI_DISCONNECTED &&
+      millis() - _lastAttemptTime >= _reconnectDelayMs)
   {
     // Reconnect attempt is due according to scheduled backoff window.
     manageConnection();

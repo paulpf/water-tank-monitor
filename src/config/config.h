@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 
-// Minimal configuration for WiFi + OTA only
+// Compile-time configuration: device identity, timings, MQTT topics,
+// sensor hardware and tank geometry. Secrets live outside the repository
+// (../_secrets, ../_config), see scripts/setup_secrets.*.
 
 // Serial configuration
 #define SERIAL_BAUD_RATE 115200
@@ -11,9 +13,6 @@ constexpr uint32_t SERIAL_STARTUP_DELAY_MS = 500;
 
 // System timings (in milliseconds)
 #define WATCHDOG_TIMEOUT 30000
-#define LONG_INTERVAL 60000    // 1 minute
-#define MIDDLE_INTERVAL 10000  // 10 seconds  
-#define SHORT_INTERVAL 1000    // 1 second
 
 // Trace level for logging
 #define TRACE_LEVEL TraceLevel::INFO
@@ -63,13 +62,13 @@ constexpr uint32_t CALIBRATION_INTERVAL_MS = 500; // read+publish cadence while 
 #define MQTT_TOPIC_RSSI                DEVICE_NAME "/system/rssi"
 #define MQTT_TOPIC_IP                  DEVICE_NAME "/system/ip"
 #define MQTT_TOPIC_HEALTH              DEVICE_NAME "/system/health"  // JSON: sensor + system diagnostics
-#define MQTT_TOPIC_COMMAND_RESET       DEVICE_NAME "/command/reset"  // any payload triggers ESP.restart()
+#define MQTT_TOPIC_COMMAND_RESET       DEVICE_NAME "/command/reset"  // payload "1" triggers ESP.restart(), anything else is ignored
 constexpr uint32_t MQTT_RSSI_INTERVAL_MS = 5000;
 
 // TL-136 4-20mA level sensor via signal conditioner + ADS1115 (I2C, 16-bit ADC)
 // Hardware: USB 5V → Boost converter → 24V loop → TL-136 → 4-20mA receiver
 //           → ADS1115 A0 (I2C) → D1 Mini D1/SCL + D2/SDA
-// Signal conditioner calibrated: 4mA → 0V, 20mA → 3.3V (SPAN/ZERO trimmer)
+// Signal conditioner (SPAN/ZERO trimmer): 4 mA → 0 V, 20 mA → SENSOR_VREF (3.153 V measured)
 // ADS1115: ADDR pin to GND → I2C address 0x48
 //          GAIN_ONE = ±4.096V range → covers 0–3.3V with 0.125 mV resolution
 constexpr uint8_t  SENSOR_ADS_I2C_ADDR      = 0x48;
@@ -83,14 +82,12 @@ constexpr uint32_t MQTT_PUBLISH_INTERVAL_MS = 1000;    // Default publish cadenc
 // Cone: 198–210 cm (12 cm height)
 // Empty (0%): 13 cm height = 408 Liters (sensor position, prevents clogging)
 // Full (100%): 210 cm height = 6500 Liters (drain outlet level)
-// Critical: 266 cm height (electrical socket danger point)
+// Critical: 250 cm height (electrical socket danger point; older notes said
+//           266 cm - verify on site)
 constexpr float TANK_CYLINDER_HEIGHT_CM = 198.0f;
-constexpr float TANK_CONE_START_CM      = 198.0f;
-constexpr float TANK_CONE_END_CM        = 210.0f;
 constexpr float TANK_RADIUS_M           = 1.0f;
 constexpr float TANK_MIN_HEIGHT_CM      = 13.0f;    // Sensor position (0%)
 constexpr float TANK_DRAIN_HEIGHT_CM    = 210.0f;   // Drain outlet (100% normal operation)
-constexpr float TANK_CRITICAL_HEIGHT_CM = 250.0f;   // Electrical socket danger point
 
 // heightCm below is the total physical water height from the tank bottom
 // (matches direct tape-measure readings), not the water column above the
@@ -100,8 +97,8 @@ constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
     { 0.000f,  13.0f },   // 0 V = 13 cm (sensor position, no water above sensor)
     { 0.2277f, 20.0f },   // 0,2277 V = 20 cm (direct measurement)
     { 2.2419f, 210.0f },  // 2,2419 V = 210 cm (direct measurement)
-    { 2.3448f, 220.0f },  // 2,3448 V = 220 cm (extrapolated: signal conditioner full-scale output, 20 mA)
-    { 3.300f,  309.8f }   // 3,300 V = 309,8 cm (extrapolated: signal conditioner full-scale output, 20 mA)
+    { 2.3448f, 220.0f },  // 2,3448 V = 220 cm (extrapolated)
+    { 3.300f,  309.8f }   // 3,300 V = 309,8 cm (extrapolated, top of the ADC range)
 };
 constexpr int SENSOR_CAL_TABLE_SIZE =
     static_cast<int>(sizeof(SENSOR_CAL_TABLE) / sizeof(SENSOR_CAL_TABLE[0]));

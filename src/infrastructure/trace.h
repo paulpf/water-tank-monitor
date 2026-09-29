@@ -1,8 +1,8 @@
 #ifndef TRACE_H
 #define TRACE_H
 
+#include <Arduino.h>
 #include "config.h"
-#include "global_defines.h"
 
 /**
  * Represents different trace levels for logging
@@ -20,36 +20,8 @@ enum class TraceLevel
 class Trace
 {
 public:
-  static void log(TraceLevel level, String message);
+  static void log(TraceLevel level, const String &message);
   static void logf(TraceLevel level, const char *format, ...);
-
-  // Helper methods for specific levels
-  static void info(String message)
-  {
-    log(TraceLevel::INFO, message);
-  }
-  static void error(String message)
-  {
-    log(TraceLevel::ERROR, message);
-  }
-  static void debug(String message)
-  {
-    log(TraceLevel::DEBUG, message);
-  }
-  static void warning(String message)
-  {
-    log(TraceLevel::WARNING, message);
-  }
-  static void trace(String message)
-  {
-    log(TraceLevel::TRACE, message);
-  }
-
-  // Method for Serial Plotter visualization
-  static void plotBoolState(String stateName, bool stateValue,
-                            int valueToPlotForTrue);
-  static void plotLoopTime(String loopName, int loopNameindex,
-                           unsigned long loopTime);
 
 private:
   // Check if the message should be logged based on the configured level

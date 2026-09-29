@@ -7,15 +7,6 @@ struct SystemConfig
 {
   // Watchdog timeout to reset system on lockup
   unsigned long watchdogTimeoutMs = WATCHDOG_TIMEOUT;
-  
-  // Main loop interval for long-running tasks (e.g., periodic telemetry)
-  unsigned long longIntervalMs = LONG_INTERVAL;
-  
-  // Main loop interval for medium-frequency tasks
-  unsigned long middleIntervalMs = MIDDLE_INTERVAL;
-  
-  // Main loop interval for high-frequency tasks
-  unsigned long shortIntervalMs = SHORT_INTERVAL;
 
   // Sensor read interval, runtime configurable via MQTT_TOPIC_READ_INTERVAL_SET
   unsigned long sensorReadIntervalMs = SENSOR_READ_INTERVAL_MS;

@@ -1,18 +1,15 @@
-// wifimanager.h
 #ifndef WIFIMANAGER_H
 #define WIFIMANAGER_H
 
-#include "global_defines.h"
+#include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include "iwificonnectivity.h"
 
 class WifiManager : public IWifiConnectivity
 {
 public:
-  WifiManager(/* args */);
-  ~WifiManager();
   void setup(String ssid, String password, String clientName);
   bool loop();
-  void manageConnection();
   bool isConnected() const override
   {
     return _wifiState == WIFI_CONNECTED;
@@ -21,6 +18,8 @@ public:
   bool consumeDisconnectedEvent() override;
 
 private:
+  void manageConnection();
+
   String _ssid;
   String _password;
   String _clientName;

@@ -64,8 +64,6 @@ static float overflowVolume(float volumeLiters)
   return volumeLiters > 6500.0f ? volumeLiters - 6500.0f : 0.0f;
 }
 
-#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
-
 bool LevelSensor::setup()
 {
   _ads.setGain(GAIN_ONE);
@@ -90,14 +88,3 @@ TankLevel LevelSensor::read()
 }
 
 bool LevelSensor::isReady() const { return _ready; }
-
-#else
-
-// Native test stubs
-bool LevelSensor::setup() { return true; }
-
-TankLevel LevelSensor::read() { return TankLevel{4.0f, 0.0f, 0.0f, 13.0f, 408.0f, 0.0f}; }
-
-bool LevelSensor::isReady() const { return true; }
-
-#endif

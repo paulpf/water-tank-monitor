@@ -1,11 +1,8 @@
 #ifndef LEVELSENSOR_H
 #define LEVELSENSOR_H
 
-#include "ilevelsensor.h"
-
-#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
 #include <Adafruit_ADS1X15.h>
-#endif
+#include "ilevelsensor.h"
 
 class LevelSensor : public ILevelSensor
 {
@@ -15,10 +12,8 @@ public:
   bool isReady() const override;
 
 private:
-#if defined(ARDUINO_ARCH_ESP8266) || defined(ARDUINO_ARCH_ESP32)
   Adafruit_ADS1115 _ads;
   bool _ready = false;
-#endif
 };
 
 #endif // LEVELSENSOR_H
