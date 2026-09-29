@@ -4,20 +4,30 @@
 #include <Arduino.h>
 #include <ArduinoOTA.h>
 #include "config.h"
-#include "iotaloopcontrol.h"
 
-class OtaManager : public IOtaLoopControl
+class OtaManager
 {
 public:
   OtaManager();
 
-  void setup(const char *hostname, const char *password = nullptr);
-  void loop() override;
-  bool isUpdating() const override;
+  // Stores the pointers; both must outlive the manager (string literals).
+  void configure(const char *hostname, const char *password);
+
+  // Sets up OTA once, on the first call with WiFi connected, then serves it.
+  void loop(bool wifiConnected);
+
+  bool isUpdating() const;
   bool isEnabled() const;
+  // True once setup was attempted, even if it failed closed (no password).
+  bool isSetupAttempted() const;
 
 private:
+  void setup();
+
+  const char *_hostname;
+  const char *_password;
   bool _enabled;
+  bool _setupAttempted;
   bool _isUpdating;
   unsigned long _lastProgressUpdate;
 

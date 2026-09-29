@@ -167,10 +167,6 @@ water-tank-monitor/
 │   ├── config/
 │   │   ├── config.h                # Alle Konstanten (Sensor, WiFi, OTA, Timings)
 │   │   └── systemconfig.h
-│   ├── contracts/
-│   │   ├── ilevelsensor.h          # Interface für Füllstandssensor
-│   │   ├── iotaloopcontrol.h
-│   │   └── iwificonnectivity.h
 │   ├── domain/
 │   │   └── tanklevel.h             # Wertobjekt: currentMa + levelPercent
 │   └── infrastructure/
@@ -291,11 +287,17 @@ Baud: **115200**
 
 ```
 [INFO] Application setup started
-[INFO] Startup is non-blocking, waiting for WiFi in main loop
-[INFO] Startup: WiFi available, initializing OTA
-[INFO] Tank: 47.3% (11.57 mA)
-[INFO] Tank: 47.5% (11.60 mA)
-[WARNING] Sensor out of range - check wiring    ← Kabel offen oder Kurzschluss
+[INFO] ADS1115 ready
+[INFO] MqttManager setup complete
+[INFO] Application setup complete
+[INFO] WiFi connected, IP: 192.168.178.42
+[INFO] Setting up OTA...
+[INFO] OTA initialized successfully
+[INFO] MQTT connecting...
+[INFO] MQTT connected
+[INFO] MQTT connected - publishing initial values
+[INFO] Tank: 47.3% | 106.1 cm | 3333 L | 11.57 mA
+[WARNING] Sensor out of range: 0.00 mA - check wiring    ← Kabel offen oder Kurzschluss
 ```
 
 ---

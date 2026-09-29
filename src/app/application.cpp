@@ -12,19 +12,12 @@
 #include "WifiSecret.h"
 
 Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
-                         SystemConfig &systemConfig, ILevelSensor &levelSensor,
-                         MqttManager &mqttManager,
-                         ConnectivityCoordinator &connectivityCoordinator,
-                         Watchdog &watchdog)
+                         SystemConfig &systemConfig, LevelSensor &levelSensor,
+                         MqttManager &mqttManager, Watchdog &watchdog)
     : _wifiManager(wifiManager), _otaManager(otaManager),
       _systemConfig(systemConfig), _levelSensor(levelSensor),
-      _mqttManager(mqttManager),
-      _connectivityCoordinator(connectivityCoordinator),
-      _watchdog(watchdog),
-      _lastStatusPrint(0), _lastSensorRead(0), _lastPublish(0), _lastRssiPublish(0), _startupWaitStart(0),
-      _startupState(StartupState::WAITING_FOR_WIFI),
-      _mqttWasConnected(false),
-      _otaSetupDone(false),
+      _mqttManager(mqttManager), _watchdog(watchdog),
+      _lastStatusPrint(0), _lastSensorRead(0), _lastPublish(0), _lastRssiPublish(0),
       _lastLevel(TankLevel::notReady()),
       _lastSensorValid(false)
 {
@@ -46,6 +39,7 @@ void Application::setup()
   }
 
   _wifiManager.setup(WIFI_SSID, WIFI_PWD, DEVICE_NAME);
+  _otaManager.configure(DEVICE_NAME, OTA_PASSWORD);
   _mqttManager.setup(MQTT_SERVER_IP, MQTT_SERVER_PORT, MQTT_USER, MQTT_PWD, DEVICE_NAME);
   _mqttManager.setCallback([this](char *topic, uint8_t *payload, unsigned int length) {
     handleMqttMessage(topic, payload, length);
@@ -54,10 +48,6 @@ void Application::setup()
   _mqttManager.subscribe(MQTT_TOPIC_READ_INTERVAL_SET);
   _mqttManager.subscribe(MQTT_TOPIC_PUBLISH_INTERVAL_SET);
   _mqttManager.subscribe(MQTT_TOPIC_CALIBRATION_MODE_SET);
-
-  _startupWaitStart = millis();
-  _startupState = StartupState::WAITING_FOR_WIFI;
-  Trace::log(TraceLevel::INFO, "Startup is non-blocking, waiting for WiFi in main loop");
 
   Trace::log(TraceLevel::INFO, "Application setup complete");
   _lastStatusPrint = millis();
@@ -69,50 +59,13 @@ void Application::loop()
 
   _watchdog.feed();
 
-  handleStartup();
-
-  // Decoupled from the one-shot startup state machine: guarantees OTA gets
-  // initialized exactly once as soon as WiFi is up, no matter how long the
-  // initial connection takes (handleStartup() gives up waiting after
-  // WIFI_INITIAL_CONNECT_TIMEOUT_MS and would otherwise skip this forever).
-  if (!_otaSetupDone && _wifiManager.isConnected())
-  {
-    _otaManager.setup(DEVICE_NAME, OTA_PASSWORD);
-    _otaSetupDone = true;
-  }
-
   _wifiManager.loop();
-  _otaManager.loop();
-  _connectivityCoordinator.handleEvents();
-  _mqttManager.loop();
-
-  bool mqttConnectedNow = _mqttManager.isConnected();
-  if (mqttConnectedNow && !_mqttWasConnected)
+  const bool wifiConnected = _wifiManager.isConnected();
+  _otaManager.loop(wifiConnected);
+  if (_mqttManager.loop(wifiConnected))
   {
-    Trace::log(TraceLevel::INFO, "MQTT connected - publishing initial values");
-    char ipBuf[16];
-    WiFi.localIP().toString().toCharArray(ipBuf, sizeof(ipBuf));
-    _mqttManager.publishRetained(MQTT_TOPIC_IP, ipBuf);
-
-    char intervalBuf[16];
-    snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.sensorReadIntervalMs);
-    _mqttManager.publishRetained(MQTT_TOPIC_READ_INTERVAL_MS, intervalBuf);
-
-    snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.publishIntervalMs);
-    _mqttManager.publishRetained(MQTT_TOPIC_PUBLISH_INTERVAL_MS, intervalBuf);
-
-    _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE, _systemConfig.calibrationMode ? "1" : "0");
-
-    // Seed retained "0" so the command datapoint exists in MQTT tools (e.g. ioBroker)
-    // before the user ever writes to it.
-    _mqttManager.publishRetained(MQTT_TOPIC_COMMAND_RESET, "0");
-
-    readSensor();
-    publishLevel();
-    _lastSensorRead = currentTime;
-    _lastPublish = currentTime;
+    onMqttConnected(currentTime);
   }
-  _mqttWasConnected = mqttConnectedNow;
 
   if (_mqttManager.isConnected() &&
       currentTime - _lastRssiPublish >= MQTT_RSSI_INTERVAL_MS)
@@ -156,6 +109,35 @@ void Application::loop()
       Trace::log(TraceLevel::INFO, "WiFi disconnected");
     }
   }
+}
+
+// `now` must be the loop's start time, not millis() read here: connect() blocked
+// before this call, and a later timestamp would make the read/publish timers
+// underflow and fire a second time in the same iteration.
+void Application::onMqttConnected(unsigned long now)
+{
+  Trace::log(TraceLevel::INFO, "MQTT connected - publishing initial values");
+  char ipBuf[16];
+  WiFi.localIP().toString().toCharArray(ipBuf, sizeof(ipBuf));
+  _mqttManager.publishRetained(MQTT_TOPIC_IP, ipBuf);
+
+  char intervalBuf[16];
+  snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.sensorReadIntervalMs);
+  _mqttManager.publishRetained(MQTT_TOPIC_READ_INTERVAL_MS, intervalBuf);
+
+  snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.publishIntervalMs);
+  _mqttManager.publishRetained(MQTT_TOPIC_PUBLISH_INTERVAL_MS, intervalBuf);
+
+  _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE, _systemConfig.calibrationMode ? "1" : "0");
+
+  // Seed retained "0" so the command datapoint exists in MQTT tools (e.g. ioBroker)
+  // before the user ever writes to it.
+  _mqttManager.publishRetained(MQTT_TOPIC_COMMAND_RESET, "0");
+
+  readSensor();
+  publishLevel();
+  _lastSensorRead = now;
+  _lastPublish = now;
 }
 
 void Application::readSensor()
@@ -225,7 +207,7 @@ void Application::publishHealth()
            WiFi.RSSI(),
            millis(),
            ESP.getFreeHeap(),
-           _otaSetupDone ? "true" : "false",
+           _otaManager.isSetupAttempted() ? "true" : "false",
            _otaManager.isEnabled() ? "true" : "false",
            _otaManager.isUpdating() ? "true" : "false");
   _mqttManager.publishRetained(MQTT_TOPIC_HEALTH, payload);
@@ -294,27 +276,5 @@ void Application::handleMqttMessage(char *topic, uint8_t *payload, unsigned int 
       _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE,
                                     _systemConfig.calibrationMode ? "1" : "0");
     }
-  }
-}
-
-void Application::handleStartup()
-{
-  if (_startupState != StartupState::WAITING_FOR_WIFI)
-  {
-    return;
-  }
-
-  if (_wifiManager.isConnected())
-  {
-    Trace::log(TraceLevel::INFO, "Startup: WiFi available");
-    _connectivityCoordinator.ensureMqttConnected();
-    _startupState = StartupState::RUNNING;
-    return;
-  }
-
-  if (millis() - _startupWaitStart > WIFI_INITIAL_CONNECT_TIMEOUT_MS)
-  {
-    Trace::log(TraceLevel::WARNING, "Initial WiFi connection timeout; continuing non-blocking");
-    _startupState = StartupState::RUNNING;
   }
 }

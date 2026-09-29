@@ -1,10 +1,11 @@
 #include "mqttmanager.h"
+#include "config.h"
 #include "trace.h"
 
 MqttManager::MqttManager()
     : _mqttServer(nullptr), _mqttPort(1883), _mqttUser(nullptr),
-      _mqttPassword(nullptr), _clientId(nullptr), _connectRequested(false),
-      _subscribeCount(0)
+      _mqttPassword(nullptr), _clientId(nullptr), _connected(false),
+      _lastAttemptMs(0), _subscribeCount(0)
 {
   _pubSubClient.setClient(_wifiClient);
 }
@@ -22,65 +23,74 @@ void MqttManager::setup(const char *mqttServer, int mqttPort,
   Trace::log(TraceLevel::INFO, "MqttManager setup complete");
 }
 
-void MqttManager::loop()
+bool MqttManager::loop(bool wifiConnected)
 {
-  switch (_sessionManager.state())
+  if (!wifiConnected)
   {
-  case MqttSessionManager::MQTT_DISCONNECTED_STATE:
-    if (_connectRequested && _sessionManager.shouldAttemptConnect(millis()))
-    {
-      reconnect();
-    }
-    break;
-
-  case MqttSessionManager::MQTT_CONNECTED_STATE:
-    if (!_pubSubClient.connected())
-    {
-      char buf[64];
-      snprintf(buf, sizeof(buf), "MQTT connection lost, rc=%d", _pubSubClient.state());
-      Trace::log(TraceLevel::WARNING, buf);
-      _sessionManager.onConnectionLost();
-    }
-    else
-    {
-      _pubSubClient.loop();
-    }
-    break;
-
-  case MqttSessionManager::MQTT_CONNECTING_STATE:
-    break;
+    disconnectIfNeeded();
+    return false;
   }
+
+  if (_pubSubClient.connected())
+  {
+    _pubSubClient.loop();
+    return false;
+  }
+
+  // One state transition per call: report the loss now and reconnect on the
+  // next call, so callers see a disconnected state between two connections.
+  if (_connected)
+  {
+    Trace::logf(TraceLevel::WARNING, "MQTT connection lost, rc=%d", _pubSubClient.state());
+    _connected = false;
+    return false;
+  }
+
+  if (millis() - _lastAttemptMs >= MQTT_RETRY_INTERVAL_MS)
+  {
+    _lastAttemptMs = millis();
+    return connect();
+  }
+
+  return false;
 }
 
-void MqttManager::reconnect()
+bool MqttManager::connect()
 {
   Trace::log(TraceLevel::INFO, "MQTT connecting...");
-  _sessionManager.onConnectAttemptStarted();
 
-  if (_pubSubClient.connect(_clientId, _mqttUser, _mqttPassword,
-                            getLwtTopic(), 1, true, "offline"))
+  if (!_pubSubClient.connect(_clientId, _mqttUser, _mqttPassword,
+                             getLwtTopic(), 1, true, "offline"))
   {
-    Trace::log(TraceLevel::INFO, "MQTT connected");
-    _sessionManager.onConnectSuccess();
-    _pubSubClient.publish(getLwtTopic(), "online", true);
+    Trace::logf(TraceLevel::ERROR, "MQTT connect failed, rc=%d", _pubSubClient.state());
+    return false;
+  }
 
-    for (int i = 0; i < _subscribeCount; i++)
-    {
-      _pubSubClient.subscribe(_subscribeTopics[i]);
-    }
-  }
-  else
+  Trace::log(TraceLevel::INFO, "MQTT connected");
+  _connected = true;
+  _pubSubClient.publish(getLwtTopic(), "online", true);
+
+  for (int i = 0; i < _subscribeCount; i++)
   {
-    _sessionManager.onConnectFailure();
-    char buf[64];
-    snprintf(buf, sizeof(buf), "MQTT connect failed, rc=%d", _pubSubClient.state());
-    Trace::log(TraceLevel::ERROR, buf);
+    _pubSubClient.subscribe(_subscribeTopics[i]);
   }
+  return true;
+}
+
+void MqttManager::disconnectIfNeeded()
+{
+  // Runs on every loop while WiFi is down; PubSubClient::disconnect() would
+  // write to the socket and overwrite the last rc each time.
+  if (_pubSubClient.connected())
+  {
+    _pubSubClient.disconnect();
+  }
+  _connected = false;
 }
 
 void MqttManager::publish(const char *topic, const char *payload)
 {
-  if (_sessionManager.isConnected())
+  if (_connected)
   {
     _pubSubClient.publish(topic, payload);
   }
@@ -88,34 +98,15 @@ void MqttManager::publish(const char *topic, const char *payload)
 
 void MqttManager::publishRetained(const char *topic, const char *payload)
 {
-  if (_sessionManager.isConnected())
+  if (_connected)
   {
     _pubSubClient.publish(topic, payload, true);
   }
 }
 
-bool MqttManager::isConnected()
+bool MqttManager::isConnected() const
 {
-  return _sessionManager.isConnected();
-}
-
-void MqttManager::requestConnect()
-{
-  if (!_connectRequested)
-  {
-    Trace::log(TraceLevel::INFO, "MQTT connect requested");
-  }
-  _connectRequested = true;
-}
-
-void MqttManager::forceDisconnect()
-{
-  _connectRequested = false;
-  if (_pubSubClient.connected())
-  {
-    _pubSubClient.disconnect();
-  }
-  _sessionManager.forceDisconnect();
+  return _connected;
 }
 
 void MqttManager::subscribe(const char *topic)

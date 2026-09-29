@@ -3,19 +3,16 @@
 
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
-#include "iwificonnectivity.h"
 
-class WifiManager : public IWifiConnectivity
+class WifiManager
 {
 public:
   void setup(String ssid, String password, String clientName);
-  bool loop();
-  bool isConnected() const override
+  void loop();
+  bool isConnected() const
   {
     return _wifiState == WIFI_CONNECTED;
   }
-  bool consumeConnectedEvent() override;
-  bool consumeDisconnectedEvent() override;
 
 private:
   void manageConnection();
@@ -34,8 +31,6 @@ private:
   WifiState _wifiState = WIFI_DISCONNECTED;
   unsigned long _wifiConnectStartTime = 0;
   uint8_t _reconnectAttempt = 0;
-  bool _connectedEventPending = false;
-  bool _disconnectedEventPending = false;
 };
 
 #endif // WIFIMANAGER_H

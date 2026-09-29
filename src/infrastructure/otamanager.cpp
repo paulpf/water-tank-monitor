@@ -3,12 +3,22 @@
 #include "watchdog.h"
 
 OtaManager::OtaManager()
-    : _enabled(ENABLE_OTA), _isUpdating(false), _lastProgressUpdate(0)
+    : _hostname(nullptr), _password(nullptr), _enabled(ENABLE_OTA),
+      _setupAttempted(false), _isUpdating(false), _lastProgressUpdate(0)
 {
 }
 
-void OtaManager::setup(const char *hostname, const char *password)
+void OtaManager::configure(const char *hostname, const char *password)
 {
+  _hostname = hostname;
+  _password = password;
+}
+
+void OtaManager::setup()
+{
+  const char *hostname = _hostname;
+  const char *password = _password;
+
   // Global OTA kill-switch from configuration.
   // If disabled, no OTA endpoint is exposed at runtime.
   if (!_enabled)
@@ -67,8 +77,18 @@ void OtaManager::setup(const char *hostname, const char *password)
   Trace::logf(TraceLevel::DEBUG, "OTA Port: %u", OTA_PORT);
 }
 
-void OtaManager::loop()
+void OtaManager::loop(bool wifiConnected)
 {
+  if (!_setupAttempted)
+  {
+    if (!wifiConnected)
+    {
+      return;
+    }
+    _setupAttempted = true;
+    setup();
+  }
+
   // Must be called frequently from main loop, otherwise OTA sessions can stall.
   if (!_enabled)
   {
@@ -76,6 +96,11 @@ void OtaManager::loop()
   }
 
   ArduinoOTA.handle();
+}
+
+bool OtaManager::isSetupAttempted() const
+{
+  return _setupAttempted;
 }
 
 bool OtaManager::isUpdating() const
