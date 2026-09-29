@@ -1,10 +1,10 @@
 #include "application.h"
-#include "trace.h"
-#include "tanklevel.h"
 #include "config.h"
+#include "mqttcommands.h"
+#include "tanklevel.h"
+#include "trace.h"
 #include <ESP8266WiFi.h>
 #include <cstring>
-#include <cstdlib>
 
 #include "MqttConfig.h"
 #include "MqttSecret.h"
@@ -17,7 +17,6 @@ Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
     : _wifiManager(wifiManager), _otaManager(otaManager),
       _systemConfig(systemConfig), _levelSensor(levelSensor),
       _mqttManager(mqttManager), _watchdog(watchdog),
-      _lastStatusPrint(0), _lastSensorRead(0), _lastPublish(0), _lastRssiPublish(0),
       _lastLevel(TankLevel::notReady()),
       _lastSensorValid(false)
 {
@@ -50,12 +49,13 @@ void Application::setup()
   _mqttManager.subscribe(MQTT_TOPIC_CALIBRATION_MODE_SET);
 
   Trace::log(TraceLevel::INFO, "Application setup complete");
-  _lastStatusPrint = millis();
+  _statusTimer.reset(millis());
 }
 
 void Application::loop()
 {
-  unsigned long currentTime = millis();
+  // Read once: every step below must use the same timestamp (see onMqttConnected).
+  const uint32_t now = millis();
 
   _watchdog.feed();
 
@@ -64,70 +64,27 @@ void Application::loop()
   _otaManager.loop(wifiConnected);
   if (_mqttManager.loop(wifiConnected))
   {
-    onMqttConnected(currentTime);
+    onMqttConnected(now);
   }
 
-  if (_mqttManager.isConnected() &&
-      currentTime - _lastRssiPublish >= MQTT_RSSI_INTERVAL_MS)
-  {
-    _lastRssiPublish = currentTime;
-    char payload[8];
-    snprintf(payload, sizeof(payload), "%d", WiFi.RSSI());
-    _mqttManager.publish(MQTT_TOPIC_RSSI, payload);
-  }
-
-  unsigned long effectiveReadIntervalMs = _systemConfig.calibrationMode
-                                               ? CALIBRATION_INTERVAL_MS
-                                               : _systemConfig.sensorReadIntervalMs;
-  unsigned long effectivePublishIntervalMs = _systemConfig.calibrationMode
-                                                  ? CALIBRATION_INTERVAL_MS
-                                                  : _systemConfig.publishIntervalMs;
-
-  if (currentTime - _lastSensorRead >= effectiveReadIntervalMs)
-  {
-    _lastSensorRead = currentTime;
-    readSensor();
-  }
-
-  if (_mqttManager.isConnected() &&
-      currentTime - _lastPublish >= effectivePublishIntervalMs)
-  {
-    _lastPublish = currentTime;
-    publishLevel();
-  }
-
-  if (currentTime - _lastStatusPrint >= STATUS_PRINT_INTERVAL_MS)
-  {
-    _lastStatusPrint = currentTime;
-    if (_wifiManager.isConnected())
-    {
-      Trace::log(TraceLevel::INFO,
-                 _mqttManager.isConnected() ? "WiFi OK, MQTT OK" : "WiFi OK, MQTT disconnected");
-    }
-    else
-    {
-      Trace::log(TraceLevel::INFO, "WiFi disconnected");
-    }
-  }
+  publishRssiIfDue(now);
+  readSensorIfDue(now);
+  publishLevelIfDue(now);
+  printStatusIfDue(now);
 }
 
 // `now` must be the loop's start time, not millis() read here: connect() blocked
 // before this call, and a later timestamp would make the read/publish timers
 // underflow and fire a second time in the same iteration.
-void Application::onMqttConnected(unsigned long now)
+void Application::onMqttConnected(uint32_t now)
 {
   Trace::log(TraceLevel::INFO, "MQTT connected - publishing initial values");
   char ipBuf[16];
   WiFi.localIP().toString().toCharArray(ipBuf, sizeof(ipBuf));
   _mqttManager.publishRetained(MQTT_TOPIC_IP, ipBuf);
 
-  char intervalBuf[16];
-  snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.sensorReadIntervalMs);
-  _mqttManager.publishRetained(MQTT_TOPIC_READ_INTERVAL_MS, intervalBuf);
-
-  snprintf(intervalBuf, sizeof(intervalBuf), "%lu", _systemConfig.publishIntervalMs);
-  _mqttManager.publishRetained(MQTT_TOPIC_PUBLISH_INTERVAL_MS, intervalBuf);
-
+  publishInterval(MQTT_TOPIC_READ_INTERVAL_MS, _systemConfig.sensorReadIntervalMs);
+  publishInterval(MQTT_TOPIC_PUBLISH_INTERVAL_MS, _systemConfig.publishIntervalMs);
   _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE, _systemConfig.calibrationMode ? "1" : "0");
 
   // Seed retained "0" so the command datapoint exists in MQTT tools (e.g. ioBroker)
@@ -136,8 +93,53 @@ void Application::onMqttConnected(unsigned long now)
 
   readSensor();
   publishLevel();
-  _lastSensorRead = now;
-  _lastPublish = now;
+  _readTimer.reset(now);
+  _publishTimer.reset(now);
+}
+
+void Application::publishRssiIfDue(uint32_t now)
+{
+  // Connection check first: the timer must not be consumed while offline.
+  if (_mqttManager.isConnected() && _rssiTimer.due(now, MQTT_RSSI_INTERVAL_MS))
+  {
+    char payload[8];
+    snprintf(payload, sizeof(payload), "%d", WiFi.RSSI());
+    _mqttManager.publish(MQTT_TOPIC_RSSI, payload);
+  }
+}
+
+void Application::readSensorIfDue(uint32_t now)
+{
+  if (_readTimer.due(now, _systemConfig.effectiveReadIntervalMs()))
+  {
+    readSensor();
+  }
+}
+
+void Application::publishLevelIfDue(uint32_t now)
+{
+  if (_mqttManager.isConnected() && _publishTimer.due(now, _systemConfig.effectivePublishIntervalMs()))
+  {
+    publishLevel();
+  }
+}
+
+void Application::printStatusIfDue(uint32_t now)
+{
+  if (!_statusTimer.due(now, STATUS_PRINT_INTERVAL_MS))
+  {
+    return;
+  }
+
+  if (_wifiManager.isConnected())
+  {
+    Trace::log(TraceLevel::INFO,
+               _mqttManager.isConnected() ? "WiFi OK, MQTT OK" : "WiFi OK, MQTT disconnected");
+  }
+  else
+  {
+    Trace::log(TraceLevel::INFO, "WiFi disconnected");
+  }
 }
 
 void Application::readSensor()
@@ -147,16 +149,12 @@ void Application::readSensor()
 
   if (!_lastSensorValid)
   {
-    char buf[64];
-    snprintf(buf, sizeof(buf), "Sensor out of range: %.2f mA - check wiring", _lastLevel.currentMa);
-    Trace::log(TraceLevel::WARNING, buf);
+    Trace::logf(TraceLevel::WARNING, "Sensor out of range: %.2f mA - check wiring", _lastLevel.currentMa);
   }
   else
   {
-    char buf[96];
-    snprintf(buf, sizeof(buf), "Tank: %.1f%% | %.1f cm | %.0f L | %.2f mA",
-             _lastLevel.levelPercent, _lastLevel.heightCm, _lastLevel.volumeLiters, _lastLevel.currentMa);
-    Trace::log(TraceLevel::INFO, buf);
+    Trace::logf(TraceLevel::INFO, "Tank: %.1f%% | %.1f cm | %.0f L | %.2f mA",
+                _lastLevel.levelPercent, _lastLevel.heightCm, _lastLevel.volumeLiters, _lastLevel.currentMa);
   }
 }
 
@@ -196,6 +194,8 @@ void Application::publishLevel()
 
 void Application::publishHealth()
 {
+  // Worst case is 171 characters. PubSubClient's default 256-byte packet
+  // buffer leaves 217 for the payload with this topic; check when adding fields.
   char payload[192];
   snprintf(payload, sizeof(payload),
            "{\"sensorReady\":%s,\"sensorValid\":%s,\"currentMa\":%.2f,"
@@ -211,6 +211,15 @@ void Application::publishHealth()
            _otaManager.isEnabled() ? "true" : "false",
            _otaManager.isUpdating() ? "true" : "false");
   _mqttManager.publishRetained(MQTT_TOPIC_HEALTH, payload);
+}
+
+void Application::publishInterval(const char *topic, uint32_t intervalMs)
+{
+  // uint32_t is unsigned int on xtensa and unsigned long elsewhere; the cast
+  // keeps %lu correct on both.
+  char buf[16];
+  snprintf(buf, sizeof(buf), "%lu", static_cast<unsigned long>(intervalMs));
+  _mqttManager.publishRetained(topic, buf);
 }
 
 void Application::handleMqttMessage(char *topic, uint8_t *payload, unsigned int length)
@@ -233,48 +242,43 @@ void Application::handleMqttMessage(char *topic, uint8_t *payload, unsigned int 
 
   if (strcmp(topic, MQTT_TOPIC_READ_INTERVAL_SET) == 0)
   {
-    char buf[16];
-    unsigned int len = length < sizeof(buf) - 1 ? length : sizeof(buf) - 1;
-    memcpy(buf, payload, len);
-    buf[len] = '\0';
-
-    unsigned long newInterval = strtoul(buf, nullptr, 10);
-    if (newInterval > 0)
-    {
-      _systemConfig.sensorReadIntervalMs = newInterval;
-      Trace::log(TraceLevel::INFO, "Sensor read interval updated via MQTT");
-      _mqttManager.publishRetained(MQTT_TOPIC_READ_INTERVAL_MS, buf);
-    }
+    applyInterval(payload, length, _systemConfig.sensorReadIntervalMs,
+                  MQTT_TOPIC_READ_INTERVAL_MS, "Sensor read interval updated via MQTT");
     return;
   }
 
   if (strcmp(topic, MQTT_TOPIC_PUBLISH_INTERVAL_SET) == 0)
   {
-    char buf[16];
-    unsigned int len = length < sizeof(buf) - 1 ? length : sizeof(buf) - 1;
-    memcpy(buf, payload, len);
-    buf[len] = '\0';
-
-    unsigned long newInterval = strtoul(buf, nullptr, 10);
-    if (newInterval > 0)
-    {
-      _systemConfig.publishIntervalMs = newInterval;
-      Trace::log(TraceLevel::INFO, "Publish interval updated via MQTT");
-      _mqttManager.publishRetained(MQTT_TOPIC_PUBLISH_INTERVAL_MS, buf);
-    }
+    applyInterval(payload, length, _systemConfig.publishIntervalMs,
+                  MQTT_TOPIC_PUBLISH_INTERVAL_MS, "Publish interval updated via MQTT");
     return;
   }
 
   if (strcmp(topic, MQTT_TOPIC_CALIBRATION_MODE_SET) == 0)
   {
-    if (length == 1 && (payload[0] == '1' || payload[0] == '0'))
+    bool enabled;
+    if (MqttCommands::parseFlag(payload, length, enabled))
     {
-      _systemConfig.calibrationMode = (payload[0] == '1');
-      Trace::log(TraceLevel::INFO, _systemConfig.calibrationMode
-                                        ? "Calibration mode ON (500ms read+publish)"
-                                        : "Calibration mode OFF");
-      _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE,
-                                    _systemConfig.calibrationMode ? "1" : "0");
+      _systemConfig.calibrationMode = enabled;
+      Trace::log(TraceLevel::INFO, enabled ? "Calibration mode ON (500ms read+publish)"
+                                           : "Calibration mode OFF");
+      _mqttManager.publishRetained(MQTT_TOPIC_CALIBRATION_MODE, enabled ? "1" : "0");
     }
   }
+}
+
+void Application::applyInterval(const uint8_t *payload, unsigned int length, uint32_t &target,
+                                const char *stateTopic, const char *logMessage)
+{
+  uint32_t intervalMs;
+  if (!MqttCommands::parseInterval(payload, length, intervalMs))
+  {
+    Trace::logf(TraceLevel::WARNING, "Ignoring invalid interval for %s (digits only, >= %lu ms)",
+                stateTopic, static_cast<unsigned long>(CALIBRATION_INTERVAL_MS));
+    return;
+  }
+
+  target = intervalMs;
+  Trace::log(TraceLevel::INFO, logMessage);
+  publishInterval(stateTopic, intervalMs);
 }

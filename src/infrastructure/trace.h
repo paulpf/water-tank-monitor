@@ -21,7 +21,8 @@ class Trace
 {
 public:
   static void log(TraceLevel level, const String &message);
-  static void logf(TraceLevel level, const char *format, ...);
+  static void logf(TraceLevel level, const char *format, ...)
+      __attribute__((format(printf, 2, 3)));
 
 private:
   // Check if the message should be logged based on the configured level
