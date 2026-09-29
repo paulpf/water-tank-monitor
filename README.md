@@ -166,7 +166,6 @@ water-tank-monitor/
 │   │   └── main.cpp
 │   ├── config/
 │   │   ├── config.h                # Alle Konstanten (Sensor, WiFi, OTA, Timings)
-│   │   ├── global_defines.h
 │   │   └── systemconfig.h
 │   ├── contracts/
 │   │   ├── ilevelsensor.h          # Interface für Füllstandssensor

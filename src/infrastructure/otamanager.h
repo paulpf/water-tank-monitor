@@ -1,9 +1,10 @@
 #ifndef OTAMANAGER_H
 #define OTAMANAGER_H
 
-#include "global_defines.h"
-#include "iotaloopcontrol.h"
+#include <Arduino.h>
 #include <ArduinoOTA.h>
+#include "config.h"
+#include "iotaloopcontrol.h"
 
 class OtaManager : public IOtaLoopControl
 {
@@ -13,7 +14,6 @@ public:
   void setup(const char *hostname, const char *password = nullptr);
   void loop() override;
   bool isUpdating() const override;
-  void setEnabled(bool enabled);
   bool isEnabled() const;
 
 private:

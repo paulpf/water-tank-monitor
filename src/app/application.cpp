@@ -6,10 +6,10 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "../../../_config/MqttConfig.h"
-#include "../../../_secrets/MqttSecret.h"
-#include "../../../_secrets/OtaSecret.h"
-#include "../../../_secrets/WifiSecret.h"
+#include "MqttConfig.h"
+#include "MqttSecret.h"
+#include "OtaSecret.h"
+#include "WifiSecret.h"
 
 Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
                          SystemConfig &systemConfig, ILevelSensor &levelSensor,

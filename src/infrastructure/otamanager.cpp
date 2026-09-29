@@ -83,19 +83,6 @@ bool OtaManager::isUpdating() const
   return _isUpdating;
 }
 
-void OtaManager::setEnabled(bool enabled)
-{
-  _enabled = enabled;
-  if (!enabled)
-  {
-    Trace::log(TraceLevel::INFO, "OTA disabled");
-  }
-  else
-  {
-    Trace::log(TraceLevel::INFO, "OTA enabled");
-  }
-}
-
 bool OtaManager::isEnabled() const
 {
   return _enabled;
@@ -149,10 +136,6 @@ void OtaManager::onProgress(unsigned int progress, unsigned int total)
     unsigned int percentage = (total > 0) ? ((progress * 100U) / total) : 0;
     Trace::logf(TraceLevel::INFO, "OTA Progress: %u%% (%u/%u bytes)",
                 percentage, progress, total);
-
-#ifdef ENABLE_LOOP_TIME_PLOTTING
-    Trace::plotLoopTime("OTA_Progress", 0, percentage);
-#endif
   }
 }
 
