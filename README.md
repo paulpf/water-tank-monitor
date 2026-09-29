@@ -1,8 +1,8 @@
 # Water Tank Monitor (D1 Mini / ESP8266)
 
 ESP8266-basierter Wasserstand-Monitor für den Longzhuo TL-136 Flüssigkeitsstand-Messumformer (4-20 mA, 12-32 VDC).
-Liest den Tankfüllstand alle 5 Sekunden per ADC aus und gibt ihn über Serial aus.
-WiFi-Konnektivität und OTA-Updates sind eingebaut.
+Liest den Tankfüllstand über einen ADS1115 (I2C) aus und veröffentlicht Füllstand, Höhe, Volumen und Diagnosewerte per MQTT
+(z. B. für ioBroker). WiFi-Konnektivität und OTA-Updates sind eingebaut.
 
 ## Inhaltsverzeichnis
 - [Hardware](#hardware)
@@ -11,6 +11,7 @@ WiFi-Konnektivität und OTA-Updates sind eingebaut.
 - [Projektstruktur](#projektstruktur)
 - [Konfiguration](#konfiguration)
 - [Build und Upload](#build-und-upload)
+- [MQTT](#mqtt)
 - [Serial-Ausgabe](#serial-ausgabe)
 - [Fehlersuche](#fehlersuche)
 - [OTA-Updates](#ota-updates)
@@ -161,20 +162,25 @@ Werte außerhalb 3,8–20,5 mA (äquivalent) werden als Sensor-/Verdrahtungsfehl
 water-tank-monitor/
 ├── src/
 │   ├── app/
-│   │   ├── application.cpp / .h    # Hauptschleife, Sensor-Polling
-│   │   ├── bootstrap.cpp / .h      # Objektgraph / Dependency Injection
-│   │   └── main.cpp
+│   │   ├── application.cpp / .h    # Hauptschleife: Timer, Publizieren, MQTT-Befehle
+│   │   └── main.cpp                # Objekte anlegen, setup()/loop()
 │   ├── config/
-│   │   ├── config.h                # Alle Konstanten (Sensor, WiFi, OTA, Timings)
-│   │   └── systemconfig.h
-│   ├── domain/
-│   │   └── tanklevel.h             # Wertobjekt: currentMa + levelPercent
-│   └── infrastructure/
-│       ├── levelsensor.cpp / .h    # ADC-Auslese + 4-20 mA Konvertierung
-│       ├── otamanager.cpp / .h
-│       ├── trace.cpp / .h
-│       └── wifimanager.cpp / .h
-├── test/
+│   │   ├── config.h                # Konstanten: Topics, Timings, Sensor, Tankgeometrie, Kalibriertabelle
+│   │   └── systemconfig.h          # Zur Laufzeit per MQTT änderbare Werte
+│   ├── domain/                     # Reine Logik ohne Arduino, nativ getestet
+│   │   ├── tankmodel.cpp / .h      # Spannung → Strom, Höhe, Prozent, Volumen, Überlauf
+│   │   ├── tanklevel.h             # Wertobjekt eines Messwerts
+│   │   ├── mqttcommands.cpp / .h   # Payload-Parser für Intervall und 0/1
+│   │   ├── intervaltimer.h         # millis()-überlaufsicherer Intervall-Timer
+│   │   └── reconnectpolicy.h       # WLAN-Backoff
+│   └── infrastructure/             # Hardware und Netzwerk
+│       ├── levelsensor.cpp / .h    # ADS1115 auslesen
+│       ├── wifimanager.cpp / .h    # WLAN verbinden, Reconnect mit Backoff
+│       ├── mqttmanager.cpp / .h    # MQTT folgt dem WLAN-Zustand, LWT, Re-Subscribe
+│       ├── otamanager.cpp / .h     # ArduinoOTA, fail-closed ohne Passwort
+│       ├── watchdog.cpp / .h       # Software-Watchdog
+│       └── trace.cpp / .h          # Serial-Logging
+├── test/native/                    # Unity-Tests für src/domain
 ├── scripts/
 ├── platformio.ini
 └── README.md
@@ -184,9 +190,13 @@ Externe Secrets (nicht im Repo):
 ```text
 ../_secrets/
 ├── WifiSecret.h        # WIFI_SSID, WIFI_PWD
+├── MqttSecret.h        # MQTT_USER, MQTT_PWD
 ├── OtaSecret.h         # OTA_PASSWORD
 └── last_ota_ip.txt     # zuletzt verwendete OTA-IP (automatisch)
+../_config/
+└── MqttConfig.h        # MQTT_SERVER_IP, MQTT_SERVER_PORT
 ```
+Anlegen mit `scripts/setup_secrets.ps1` bzw. `scripts/setup_secrets.sh`.
 
 ---
 
@@ -197,43 +207,45 @@ Alle Konstanten liegen in [src/config/config.h](src/config/config.h).
 ### Sensor-Parameter
 
 ```cpp
-constexpr uint8_t  SENSOR_ADS_I2C_ADDR    = 0x48;   // ADDR-Pin → GND
-constexpr uint8_t  SENSOR_ADS_CHANNEL     = 0;      // ADS1115 Kanal A0
-constexpr float    SENSOR_VREF            = 3.3f;   // V (= Vollausschlag Empfänger)
-constexpr uint32_t SENSOR_READ_INTERVAL_MS = 5000;  // ms
+constexpr uint8_t  SENSOR_ADS_I2C_ADDR      = 0x48;   // ADDR-Pin → GND
+constexpr uint8_t  SENSOR_ADS_CHANNEL       = 0;      // ADS1115 Kanal A0
+constexpr float    SENSOR_VREF              = 3.153f; // gemessener Vollausschlag des Empfängers (20 mA) [V]
+constexpr uint32_t SENSOR_READ_INTERVAL_MS  = 500;    // Standard-Leseintervall, per MQTT änderbar
+constexpr uint32_t MQTT_PUBLISH_INTERVAL_MS = 1000;   // Standard-Sendeintervall, per MQTT änderbar
 ```
 
-Die Formel setzt voraus, dass der Signalempfänger auf **4 mA → 0 V** und **20 mA → 3,3 V** kalibriert ist (ZERO/SPAN-Trimmer, s. Abschnitt [Kalibrierung des Signalempfängers](#kalibrierung-des-signalempfängers)).
+`SENSOR_VREF` wird nur für den Stromwert (`currentMa`) und die Gültigkeitsprüfung (3,8–20,5 mA) verwendet.
+Voraussetzung: Der Signalempfänger ist auf **4 mA → 0 V** kalibriert (ZERO/SPAN-Trimmer, s. Abschnitt
+[Kalibrierung des Signalempfängers](#kalibrierung-des-signalempfängers)).
 
-### Software-Kalibrierung (Feinabgleich)
+### Software-Kalibrierung (Kalibriertabelle)
 
-Weicht der angezeigte Wert vom tatsächlichen Füllstand ab, kann eine lineare Korrektur in `config.h` eingetragen werden:
+Die Wasserhöhe wird über die Tabelle `SENSOR_CAL_TABLE` in `config.h` aus der Spannung berechnet: zwischen zwei Punkten
+linear interpoliert, unterhalb des ersten Punkts auf die Sensorhöhe begrenzt, oberhalb des letzten mit der Steigung des
+letzten Abschnitts extrapoliert. Höhe ist die gesamte Wasserhöhe ab Tankboden (wie mit dem Maßband gemessen).
 
 ```cpp
-constexpr float SENSOR_CAL_RAW    = 59.6f;  // angezeigter % beim Referenzpunkt
-constexpr float SENSOR_CAL_ACTUAL = 71.1f;  // tatsächlicher % an diesem Punkt
+constexpr SensorCalPoint SENSOR_CAL_TABLE[] = {
+    { 0.000f,  13.0f },   // Sensorposition
+    { 0.2277f, 20.0f },   // gemessen
+    { 2.2419f, 210.0f },  // gemessen
+    ...
+};
 ```
 
-**Vorgehen:**
+**Neuen Messpunkt aufnehmen:**
 
-1. Firmware flashen und Serial-Monitor öffnen
-2. Tank auf einen **bekannten Füllstand** bringen (z. B. mit Maßband messen)
-3. Den angezeigten %-Wert aus dem Serial-Log ablesen
-4. `SENSOR_CAL_RAW` = angezeigter Wert, `SENSOR_CAL_ACTUAL` = echter Wert
-5. Firmware neu bauen und flashen
+1. Kalibriermodus einschalten: `1` auf `water-tank-monitor/config/calibrationMode/set` (Werte alle 500 ms)
+2. Wasserhöhe mit dem Maßband messen
+3. Spannung aus `water-tank-monitor/tank/voltageV` ablesen
+4. Punkt `{ Spannung, Höhe }` in `SENSOR_CAL_TABLE` einfügen (Spannungen aufsteigend sortiert)
+5. `pio test -e native` ausführen (prüft u. a. alle Tabellenpunkte), Firmware bauen und flashen
+6. Kalibriermodus ausschalten: `0` auf `.../calibrationMode/set`
 
-Der Nullpunkt (0 % → 0 %) ist fix — es wird immer durch den Ursprung kalibriert.  
-Der Korrekturfaktor ergibt sich automatisch: `Faktor = ACTUAL / RAW`.
+### Libraries
 
-> Beispiel: Angezeigt 59,6 %, tatsächlich 71,1 % → Faktor ≈ 1,193 → alle Werte werden hochskaliert.
-
-### Library
-
-```
-adafruit/Adafruit ADS1X15 @ ^2.5.0
-```
-
-Wird automatisch über PlatformIO installiert.
+Versionen sind in `platformio.ini` exakt festgelegt (Adafruit ADS1X15, Adafruit BusIO, PubSubClient) und werden
+automatisch über PlatformIO installiert.
 
 ### WiFi Credentials
 
@@ -278,6 +290,32 @@ scripts\upload_ota.bat
 ```
 
 Die zuletzt verwendete IP wird in `../_secrets/last_ota_ip.txt` gespeichert.
+
+---
+
+## MQTT
+
+Alle Topics beginnen mit `water-tank-monitor/`. Werte veröffentlicht das Gerät retained, außer `system/rssi`.
+
+| Topic | Inhalt |
+|---|---|
+| `tank/levelPercent`, `tank/heightCm`, `tank/volumeLiters`, `tank/volumeOverflowLiters` | Messwerte (nur bei gültigem Sensorwert) |
+| `tank/currentMa`, `tank/voltageV`, `tank/valid` | Rohwerte und Gültigkeit (`true`/`false`) |
+| `system/health` | JSON mit Sensor-, WLAN-, Heap- und OTA-Status |
+| `system/ip`, `system/rssi` | IP-Adresse, WLAN-Signalstärke |
+| `system/status` | `online`, bzw. `offline` als Last Will |
+| `config/readIntervalMs`, `config/publishIntervalMs`, `config/calibrationMode` | aktuelle Einstellungen |
+
+Befehle (auf das jeweilige Topic schreiben):
+
+| Topic | Gültige Werte |
+|---|---|
+| `config/readIntervalMs/set`, `config/publishIntervalMs/set` | nur Ziffern, ohne führende Null, ab 500 (ms); sehr große Werte (bis 4294967295) setzen Lesen bzw. Senden praktisch aus |
+| `config/calibrationMode/set` | `1` (Lesen und Senden alle 500 ms) oder `0` |
+| `command/reset` | `1` startet das Gerät neu, alles andere wird ignoriert |
+
+Ungültige Werte werden ignoriert und im Serial-Log als Warnung gemeldet. Frühere Firmware-Versionen haben z. B. `12abc`
+als 12 ms übernommen, Werte unter 500 ms akzeptiert und den Rohtext ins State-Topic zurückgeschrieben.
 
 ---
 
@@ -445,7 +483,11 @@ pio run -e d1-mini-usb          # Firmware-Build
 pio test -e native              # Unit-Tests (benötigt gcc/g++ lokal)
 ```
 
-CI-Workflow: `.github/workflows/ci.yml`
+Die Unit-Tests kompilieren den echten Code aus `src/domain/` für den PC (`test_build_src = yes`):
+Kalibrierung und Tankgeometrie, MQTT-Payload-Parser, Intervall-Timer und WLAN-Backoff.
+Unter Windows liefert z. B. `winget install BrechtSanders.WinLibs.POSIX.UCRT` den nötigen gcc/g++.
+
+CI-Workflow: `.github/workflows/ci.yml` (Firmware-Build und Unit-Tests bei Push auf `main` und bei Pull Requests auf `main`)
 
 ### Build-Cache leeren
 

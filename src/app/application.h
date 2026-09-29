@@ -1,12 +1,13 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include "wifimanager.h"
-#include "otamanager.h"
-#include "systemconfig.h"
+#include "intervaltimer.h"
 #include "levelsensor.h"
 #include "mqttmanager.h"
+#include "otamanager.h"
+#include "systemconfig.h"
 #include "watchdog.h"
+#include "wifimanager.h"
 
 class Application
 {
@@ -19,11 +20,20 @@ public:
   void loop();
 
 private:
-  void onMqttConnected(unsigned long now);
+  void onMqttConnected(uint32_t now);
+  void publishRssiIfDue(uint32_t now);
+  void readSensorIfDue(uint32_t now);
+  void publishLevelIfDue(uint32_t now);
+  void printStatusIfDue(uint32_t now);
+
   void readSensor();
   void publishLevel();
   void publishHealth();
+  void publishInterval(const char *topic, uint32_t intervalMs);
+
   void handleMqttMessage(char *topic, uint8_t *payload, unsigned int length);
+  void applyInterval(const uint8_t *payload, unsigned int length, uint32_t &target,
+                     const char *stateTopic, const char *logMessage);
 
   WifiManager &_wifiManager;
   OtaManager &_otaManager;
@@ -31,10 +41,11 @@ private:
   LevelSensor &_levelSensor;
   MqttManager &_mqttManager;
   Watchdog &_watchdog;
-  unsigned long _lastStatusPrint;
-  unsigned long _lastSensorRead;
-  unsigned long _lastPublish;
-  unsigned long _lastRssiPublish;
+
+  IntervalTimer _rssiTimer;
+  IntervalTimer _readTimer;
+  IntervalTimer _publishTimer;
+  IntervalTimer _statusTimer;
 
   // Most recently read sensor values, decoupled from publish cadence.
   TankLevel _lastLevel;
