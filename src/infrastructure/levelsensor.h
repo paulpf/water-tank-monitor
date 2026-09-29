@@ -2,14 +2,14 @@
 #define LEVELSENSOR_H
 
 #include <Adafruit_ADS1X15.h>
-#include "ilevelsensor.h"
+#include "tanklevel.h"
 
-class LevelSensor : public ILevelSensor
+class LevelSensor
 {
 public:
-  bool setup() override;
-  TankLevel read() override;
-  bool isReady() const override;
+  bool setup();
+  TankLevel read();
+  bool isReady() const;
 
 private:
   Adafruit_ADS1115 _ads;

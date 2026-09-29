@@ -32,7 +32,6 @@ constexpr uint16_t OTA_PORT = 3232;
 
 // WiFi configuration
 constexpr int WIFI_CONNECTION_TIMEOUT = 10000; // milliseconds
-constexpr uint32_t WIFI_INITIAL_CONNECT_TIMEOUT_MS = 15000;
 constexpr uint8_t WIFI_MAX_RECONNECT_ATTEMPTS = 10;
 constexpr uint32_t WIFI_RECONNECT_BASE_DELAY_MS = 1000;
 constexpr uint32_t WIFI_RECONNECT_MAX_DELAY_MS = 30000;

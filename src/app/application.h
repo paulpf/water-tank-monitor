@@ -4,31 +4,22 @@
 #include "wifimanager.h"
 #include "otamanager.h"
 #include "systemconfig.h"
-#include "ilevelsensor.h"
+#include "levelsensor.h"
 #include "mqttmanager.h"
-#include "connectivitycoordinator.h"
 #include "watchdog.h"
 
 class Application
 {
 public:
   Application(WifiManager &wifiManager, OtaManager &otaManager,
-              SystemConfig &systemConfig, ILevelSensor &levelSensor,
-              MqttManager &mqttManager,
-              ConnectivityCoordinator &connectivityCoordinator,
-              Watchdog &watchdog);
+              SystemConfig &systemConfig, LevelSensor &levelSensor,
+              MqttManager &mqttManager, Watchdog &watchdog);
 
   void setup();
   void loop();
 
 private:
-  enum class StartupState
-  {
-    WAITING_FOR_WIFI,
-    RUNNING
-  };
-
-  void handleStartup();
+  void onMqttConnected(unsigned long now);
   void readSensor();
   void publishLevel();
   void publishHealth();
@@ -37,18 +28,13 @@ private:
   WifiManager &_wifiManager;
   OtaManager &_otaManager;
   SystemConfig &_systemConfig;
-  ILevelSensor &_levelSensor;
+  LevelSensor &_levelSensor;
   MqttManager &_mqttManager;
-  ConnectivityCoordinator &_connectivityCoordinator;
   Watchdog &_watchdog;
   unsigned long _lastStatusPrint;
   unsigned long _lastSensorRead;
   unsigned long _lastPublish;
   unsigned long _lastRssiPublish;
-  unsigned long _startupWaitStart;
-  StartupState _startupState;
-  bool _mqttWasConnected;
-  bool _otaSetupDone;
 
   // Most recently read sensor values, decoupled from publish cadence.
   TankLevel _lastLevel;

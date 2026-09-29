@@ -1,35 +1,34 @@
 #ifndef MQTTMANAGER_H
 #define MQTTMANAGER_H
 
-#include "imessagepublisher.h"
-#include "imqttconnectioncontrol.h"
-#include "mqttsessionmanager.h"
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 #include <functional>
 
-class MqttManager : public IMessagePublisher, public IMqttConnectionControl
+class MqttManager
 {
 public:
   MqttManager();
 
   void setup(const char *mqttServer, int mqttPort, const char *mqttUser,
              const char *mqttPassword, const char *clientId);
-  void loop();
 
-  void publish(const char *topic, const char *payload) override;
-  void publishRetained(const char *topic, const char *payload) override;
-  bool isConnected() override;
+  // Connects while WiFi is up, retries every MQTT_RETRY_INTERVAL_MS and
+  // disconnects when WiFi is down. Returns true only in the call that
+  // established a new connection.
+  bool loop(bool wifiConnected);
 
-  void requestConnect() override;
-  void forceDisconnect() override;
+  void publish(const char *topic, const char *payload);
+  void publishRetained(const char *topic, const char *payload);
+  bool isConnected() const;
 
   // Re-subscribed automatically on every (re)connect
   void subscribe(const char *topic);
   void setCallback(std::function<void(char *, uint8_t *, unsigned int)> callback);
 
 private:
-  void reconnect();
+  bool connect();
+  void disconnectIfNeeded();
   const char *getLwtTopic() const;
 
   const char *_mqttServer;
@@ -37,7 +36,8 @@ private:
   const char *_mqttUser;
   const char *_mqttPassword;
   const char *_clientId;
-  bool _connectRequested;
+  bool _connected;
+  unsigned long _lastAttemptMs;
 
   static const int MAX_SUBSCRIPTIONS = 4;
   const char *_subscribeTopics[MAX_SUBSCRIPTIONS];
@@ -45,7 +45,6 @@ private:
 
   WiFiClient _wifiClient;
   PubSubClient _pubSubClient;
-  MqttSessionManager _sessionManager;
 
   static const int LWT_TOPIC_MAX_LEN = 64;
   mutable char _lwtTopic[LWT_TOPIC_MAX_LEN];

@@ -29,27 +29,11 @@ void WifiManager::setup(String ssid, String password, String clientName)
   _wifiState = WIFI_CONNECTING;
   _lastAttemptTime = _wifiConnectStartTime;
   _reconnectDelayMs = 0;
-  _connectedEventPending = false;
-  _disconnectedEventPending = false;
 
   Trace::log(TraceLevel::DEBUG, "WiFi setup complete.");
 }
 
-bool WifiManager::consumeConnectedEvent()
-{
-  bool hadEvent = _connectedEventPending;
-  _connectedEventPending = false;
-  return hadEvent;
-}
-
-bool WifiManager::consumeDisconnectedEvent()
-{
-  bool hadEvent = _disconnectedEventPending;
-  _disconnectedEventPending = false;
-  return hadEvent;
-}
-
-bool WifiManager::loop()
+void WifiManager::loop()
 {
   const bool isConnectedNow = (WiFi.status() == WL_CONNECTED);
 
@@ -60,8 +44,6 @@ bool WifiManager::loop()
     Trace::logf(TraceLevel::INFO, "WiFi connected, IP: %u.%u.%u.%u", ip[0],
                 ip[1], ip[2], ip[3]);
     _wifiState = WIFI_CONNECTED;
-    _connectedEventPending = true;
-    _disconnectedEventPending = false;
     _reconnectAttempt = 0;
   }
   else if (!isConnectedNow && _wifiState == WIFI_CONNECTED)
@@ -69,8 +51,6 @@ bool WifiManager::loop()
     Trace::log(TraceLevel::INFO,
                "WiFi disconnected, attempting to reconnect...");
     _wifiState = WIFI_DISCONNECTED;
-    _disconnectedEventPending = true;
-    _connectedEventPending = false;
     _lastAttemptTime = millis();
     _reconnectDelayMs = 0;
   }
@@ -93,9 +73,6 @@ bool WifiManager::loop()
     // Reconnect attempt is due according to scheduled backoff window.
     manageConnection();
   }
-
-  // Return connection status: true if connected, false otherwise
-  return _wifiState == WIFI_CONNECTED;
 }
 
 void WifiManager::manageConnection()
