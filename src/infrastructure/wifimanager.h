@@ -24,7 +24,8 @@ private:
   String _ssid;
   String _password;
   String _clientName;
-  unsigned long _nextReconnectAttemptTime = 0;
+  unsigned long _lastAttemptTime = 0;
+  uint32_t _reconnectDelayMs = 0;
   enum WifiState
   {
     WIFI_DISCONNECTED,

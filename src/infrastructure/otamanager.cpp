@@ -1,5 +1,6 @@
 #include "otamanager.h"
 #include "trace.h"
+#include "watchdog.h"
 
 OtaManager::OtaManager()
     : _enabled(ENABLE_OTA), _isUpdating(false), _lastProgressUpdate(0)
@@ -133,6 +134,11 @@ void OtaManager::onEnd()
 
 void OtaManager::onProgress(unsigned int progress, unsigned int total)
 {
+  // ArduinoOTA.handle() blocks for the whole transfer, so loop() can't feed
+  // the watchdog meanwhile. Feed on every chunk: a stalled transfer stops
+  // calling this and the watchdog still fires.
+  Watchdog::feed();
+
   unsigned long currentTime = millis();
 
   // Rate limit progress logs to reduce serial overhead and log noise.
