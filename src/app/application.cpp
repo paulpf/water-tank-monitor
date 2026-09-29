@@ -25,7 +25,7 @@ Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
       _startupState(StartupState::WAITING_FOR_WIFI),
       _mqttWasConnected(false),
       _otaSetupDone(false),
-      _lastLevel{0.0f, 0.0f, 0.0f, 13.0f, 408.0f, 0.0f},
+      _lastLevel(TankLevel::notReady()),
       _lastSensorValid(false)
 {
 }

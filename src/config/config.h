@@ -88,6 +88,8 @@ constexpr float TANK_CYLINDER_HEIGHT_CM = 198.0f;
 constexpr float TANK_RADIUS_M           = 1.0f;
 constexpr float TANK_MIN_HEIGHT_CM      = 13.0f;    // Sensor position (0%)
 constexpr float TANK_DRAIN_HEIGHT_CM    = 210.0f;   // Drain outlet (100% normal operation)
+constexpr float TANK_MIN_VOLUME_L       = 408.0f;   // Reported volume at/below sensor height
+constexpr float TANK_NOMINAL_VOLUME_L   = 6500.0f;  // Volume at drain outlet; above that is overflow
 
 // heightCm below is the total physical water height from the tank bottom
 // (matches direct tape-measure readings), not the water column above the
