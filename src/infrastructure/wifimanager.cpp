@@ -33,7 +33,8 @@ void WifiManager::setup(String ssid, String password, String clientName)
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
   _wifiConnectStartTime = millis();
   _wifiState = WIFI_CONNECTING;
-  _nextReconnectAttemptTime = _wifiConnectStartTime;
+  _lastAttemptTime = _wifiConnectStartTime;
+  _reconnectDelayMs = 0;
   _connectedEventPending = false;
   _disconnectedEventPending = false;
 
@@ -76,7 +77,8 @@ bool WifiManager::loop()
     _wifiState = WIFI_DISCONNECTED;
     _disconnectedEventPending = true;
     _connectedEventPending = false;
-    _nextReconnectAttemptTime = millis();
+    _lastAttemptTime = millis();
+    _reconnectDelayMs = 0;
   }
 
   // Safety net:
@@ -87,7 +89,8 @@ bool WifiManager::loop()
     Trace::log(TraceLevel::WARNING,
                "WiFi connect timeout, scheduling reconnect");
     _wifiState = WIFI_DISCONNECTED;
-    _nextReconnectAttemptTime = millis();
+    _lastAttemptTime = millis();
+    _reconnectDelayMs = 0;
   }
 
   // Fast-path: transition CONNECTING -> CONNECTED as soon as link is up.
@@ -100,7 +103,7 @@ bool WifiManager::loop()
     _reconnectAttempt = 0;
   }
   else if (_wifiState == WIFI_DISCONNECTED &&
-           millis() >= _nextReconnectAttemptTime)
+           millis() - _lastAttemptTime >= _reconnectDelayMs)
   {
     // Reconnect attempt is due according to scheduled backoff window.
     manageConnection();
@@ -128,7 +131,8 @@ void WifiManager::manageConnection()
     const uint32_t reconnectDelayMs = ReconnectPolicy::computeDelayMs(
         _reconnectAttempt, WIFI_RECONNECT_BASE_DELAY_MS,
         WIFI_RECONNECT_MAX_DELAY_MS, jitter);
-    _nextReconnectAttemptTime = _wifiConnectStartTime + reconnectDelayMs;
+    _lastAttemptTime = _wifiConnectStartTime;
+    _reconnectDelayMs = reconnectDelayMs;
 
     Trace::logf(TraceLevel::DEBUG, "Next reconnect in ms: %lu",
                 static_cast<unsigned long>(reconnectDelayMs));
@@ -148,7 +152,8 @@ void WifiManager::manageConnection()
     // Stay alive for serial/remote diagnostics and retry again later.
     Trace::log(TraceLevel::WARNING,
                "Keeping device alive for diagnostics (no forced restart)");
-    _nextReconnectAttemptTime = millis() + WIFI_RECONNECT_MAX_DELAY_MS;
+    _lastAttemptTime = millis();
+    _reconnectDelayMs = WIFI_RECONNECT_MAX_DELAY_MS;
     _reconnectAttempt = 0;
 #endif
   }
