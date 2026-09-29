@@ -134,25 +134,31 @@ den ZERO-Trimmer so weit wie möglich gegen 0 V trimmen — der Rest wird durch 
 
 Der TL-136 ist ein **2-Draht Loop-Transmitter**: Er moduliert den Strom im
 Loop proportional zum Füllstand. Der **4-20 mA Signalempfänger** wandelt
-diesen Strom in eine Spannung um, die der ESP8266-ADC (A0, 10 Bit, 0–3,3 V) misst.
+diesen Strom in eine Spannung um, die der **ADS1115** (Kanal A0, 16 Bit, `GAIN_ONE` = ±4,096 V, 0,125 mV/Bit) misst.
 
-| Füllstand | Loop-Strom | Spannung an A0 (kalibriert) | ADC-Wert (0–1023) |
-|---|---|---|---|
-| 0 % | 4 mA | 0,00 V | 0 |
-| 25 % | 8 mA | 0,83 V | ~256 |
-| 50 % | 12 mA | 1,65 V | ~512 |
-| 75 % | 16 mA | 2,48 V | ~768 |
-| 100 % | 20 mA | 3,30 V | ~1023 |
+| Loop-Strom | Spannung an ADS1115 A0 (kalibriert, `SENSOR_VREF` = 3,153 V) |
+|---|---|
+| 4 mA | 0,000 V |
+| 8 mA | 0,788 V |
+| 12 mA | 1,577 V |
+| 16 mA | 2,365 V |
+| 20 mA | 3,153 V |
 
-**Formel:**
+**Umrechnung** (in [src/domain/tankmodel.cpp](src/domain/tankmodel.cpp)):
 
 ```
-Spannung  = (ADC / 1023) × 3,3 V
-Füllstand = (Spannung / 3,3 V) × 100   [%]
-I_äquiv   = (Füllstand / 100) × 16 + 4  [mA]  ← nur für Logging/Validierung
+Strom    = (Spannung / SENSOR_VREF) × 16 + 4          [mA]  ← nur für Diagnose und Gültigkeitsprüfung
+Höhe     = Kalibriertabelle SENSOR_CAL_TABLE(Spannung) [cm]  ← gesamte Wasserhöhe ab Tankboden
+Füllstand = (Höhe − 13 cm) / (210 cm − 13 cm) × 100    [%]   ← 0 % = Sensorposition, 100 % = Ablauf
+Volumen  = Zylinder (r = 1 m) bis 198 cm, darüber linear bis 6500 L bei 210 cm   [L]
+Überlauf = Volumen − 6500 L, falls positiv                [L]
 ```
 
-Werte außerhalb 3,8–20,5 mA (äquivalent) werden als Sensor-/Verdrahtungsfehler geloggt.
+Die Höhe folgt nicht linear aus dem Strom, sondern aus gemessenen Stützpunkten (siehe
+[Software-Kalibrierung](#software-kalibrierung-kalibriertabelle)). Oberhalb 210 cm kann der Füllstand über 100 % steigen.
+
+Werte außerhalb 3,8–20,5 mA werden als Sensor-/Verdrahtungsfehler geloggt, per MQTT als `tank/valid = false`
+gemeldet und die Messwerte (Füllstand, Höhe, Volumen) dann nicht veröffentlicht.
 
 ---
 
@@ -360,7 +366,7 @@ Alle Spannungen gegen GND-Schiene. Multimeter DC-Volt, Loop-Strom in Reihe.
 
 ---
 
-### Fehlerbild: `[WARNING] Sensor out of range – check wiring`
+### Fehlerbild: `[WARNING] Sensor out of range: … mA - check wiring`
 
 Tritt auf wenn `currentMa < 3,8` oder `currentMa > 20,5`. Schritt für Schritt eingrenzen:
 
