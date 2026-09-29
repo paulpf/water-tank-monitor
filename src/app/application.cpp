@@ -25,7 +25,7 @@ Application::Application(WifiManager &wifiManager, OtaManager &otaManager,
       _startupState(StartupState::WAITING_FOR_WIFI),
       _mqttWasConnected(false),
       _otaSetupDone(false),
-      _lastLevel{0.0f, 0.0f, 0.0f, 13.0f, 408.0f},
+      _lastLevel{0.0f, 0.0f, 0.0f, 13.0f, 408.0f, 0.0f},
       _lastSensorValid(false)
 {
 }
@@ -204,6 +204,9 @@ void Application::publishLevel()
 
     snprintf(payload, sizeof(payload), "%.0f", _lastLevel.volumeLiters);
     _mqttManager.publishRetained(MQTT_TOPIC_VOLUME_LITERS, payload);
+
+    snprintf(payload, sizeof(payload), "%.0f", _lastLevel.overflowLiters);
+    _mqttManager.publishRetained(MQTT_TOPIC_VOLUME_OVERFLOW_L, payload);
   }
 
   publishHealth();
