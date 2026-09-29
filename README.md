@@ -177,11 +177,10 @@ water-tank-monitor/
 │   │   ├── tankmodel.cpp / .h      # Spannung → Strom, Höhe, Prozent, Volumen, Überlauf
 │   │   ├── tanklevel.h             # Wertobjekt eines Messwerts
 │   │   ├── mqttcommands.cpp / .h   # Payload-Parser für Intervall und 0/1
-│   │   ├── intervaltimer.h         # millis()-überlaufsicherer Intervall-Timer
-│   │   └── reconnectpolicy.h       # WLAN-Backoff
+│   │   └── intervaltimer.h         # millis()-überlaufsicherer Intervall-Timer
 │   └── infrastructure/             # Hardware und Netzwerk
 │       ├── levelsensor.cpp / .h    # ADS1115 auslesen
-│       ├── wifimanager.cpp / .h    # WLAN verbinden, Reconnect mit Backoff
+│       ├── wifimanager.cpp / .h    # WLAN verbinden; Reconnect macht das SDK, Fallback nach 5 min
 │       ├── mqttmanager.cpp / .h    # MQTT folgt dem WLAN-Zustand, LWT, Re-Subscribe
 │       ├── otamanager.cpp / .h     # ArduinoOTA, fail-closed ohne Passwort
 │       ├── watchdog.cpp / .h       # Software-Watchdog
@@ -478,7 +477,7 @@ Skript `scripts/upload_ota.ps1`:
 - OTA nur in vertrauenswürdigen Netzen aktivieren
 - Keine Secrets ins Repository committen
 - `OTA_PASSWORD` immer setzen (`OTA_ALLOW_INSECURE_NO_PASSWORD false`)
-- Bei WLAN-Ausfall: automatischer Reconnect mit Backoff + Jitter
+- Bei WLAN-Ausfall: automatischer Reconnect durch das ESP8266-SDK; nach 5 min ohne Verbindung startet die Firmware den Verbindungsaufbau neu
 
 ---
 
@@ -490,7 +489,7 @@ pio test -e native              # Unit-Tests (benötigt gcc/g++ lokal)
 ```
 
 Die Unit-Tests kompilieren den echten Code aus `src/domain/` für den PC (`test_build_src = yes`):
-Kalibrierung und Tankgeometrie, MQTT-Payload-Parser, Intervall-Timer und WLAN-Backoff.
+Kalibrierung und Tankgeometrie, MQTT-Payload-Parser und Intervall-Timer.
 Unter Windows liefert z. B. `winget install BrechtSanders.WinLibs.POSIX.UCRT` den nötigen gcc/g++.
 
 CI-Workflow: `.github/workflows/ci.yml` (Firmware-Build und Unit-Tests bei Push auf `main` und bei Pull Requests auf `main`)

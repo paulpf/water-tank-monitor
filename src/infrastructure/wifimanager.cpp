@@ -1,23 +1,22 @@
 #include "wifimanager.h"
 #include "config.h"
-#include "reconnectpolicy.h"
 #include "trace.h"
 
 void WifiManager::setup(String ssid, String password, String clientName)
 {
-  // Store credentials/identity for reconnect attempts and diagnostics.
   _ssid = ssid;
   _password = password;
-  _clientName = clientName;
 
   // Configure station mode and hostname before connecting.
   // Hostname helps identify this node in router UI and mDNS environments.
   WiFi.mode(WIFI_STA);
   WiFi.setHostname(clientName.c_str());
-  randomSeed(micros());
 
-  // Kick off first connect explicitly.
-  // We do not rely on implicit connect behavior or event ordering side effects.
+  // The SDK reconnects on its own after a loss. Driving reconnects manually
+  // (disconnect() + begin() on a short backoff) can abort an association
+  // that is still in progress, so the firmware only falls back to begin()
+  // after a long outage, see loop().
+  WiFi.setAutoReconnect(true);
   WiFi.begin(_ssid.c_str(), _password.c_str());
 
   // Default modem sleep delays responses (ping, OTA UDP invite, MQTT) between
@@ -25,98 +24,33 @@ void WifiManager::setup(String ssid, String password, String clientName)
   // Set after begin(): applying it before the connection handshake has been
   // observed to interfere with association on some ESP8266 core versions.
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
-  _wifiConnectStartTime = millis();
-  _wifiState = WIFI_CONNECTING;
-  _lastAttemptTime = _wifiConnectStartTime;
-  _reconnectDelayMs = 0;
+  _lastBeginMs = millis();
 
   Trace::log(TraceLevel::DEBUG, "WiFi setup complete.");
 }
 
 void WifiManager::loop()
 {
-  const bool isConnectedNow = (WiFi.status() == WL_CONNECTED);
+  const bool connectedNow = (WiFi.status() == WL_CONNECTED);
 
-  // Track connection edges via polling to stay compatible across ESP32/ESP8266.
-  if (isConnectedNow && _wifiState != WIFI_CONNECTED)
+  if (connectedNow && !_connected)
   {
     const IPAddress ip = WiFi.localIP();
     Trace::logf(TraceLevel::INFO, "WiFi connected, IP: %u.%u.%u.%u", ip[0],
                 ip[1], ip[2], ip[3]);
-    _wifiState = WIFI_CONNECTED;
-    _reconnectAttempt = 0;
+    _connected = true;
   }
-  else if (!isConnectedNow && _wifiState == WIFI_CONNECTED)
+  else if (!connectedNow && _connected)
   {
-    Trace::log(TraceLevel::INFO,
-               "WiFi disconnected, attempting to reconnect...");
-    _wifiState = WIFI_DISCONNECTED;
-    _lastAttemptTime = millis();
-    _reconnectDelayMs = 0;
+    Trace::log(TraceLevel::INFO, "WiFi disconnected, waiting for auto-reconnect...");
+    _connected = false;
+    _lastBeginMs = millis();
   }
 
-  // Safety net:
-  // If initial connect stalls, move to DISCONNECTED so managed reconnect kicks in.
-  if (_wifiState == WIFI_CONNECTING && !isConnectedNow &&
-      (millis() - _wifiConnectStartTime) >= WIFI_CONNECTION_TIMEOUT)
+  if (!_connected && millis() - _lastBeginMs >= WIFI_FALLBACK_BEGIN_MS)
   {
-    Trace::log(TraceLevel::WARNING,
-               "WiFi connect timeout, scheduling reconnect");
-    _wifiState = WIFI_DISCONNECTED;
-    _lastAttemptTime = millis();
-    _reconnectDelayMs = 0;
-  }
-
-  if (_wifiState == WIFI_DISCONNECTED &&
-      millis() - _lastAttemptTime >= _reconnectDelayMs)
-  {
-    // Reconnect attempt is due according to scheduled backoff window.
-    manageConnection();
-  }
-}
-
-void WifiManager::manageConnection()
-{
-  // Retry budget is bounded to avoid infinite tight reconnect loops.
-  if (_reconnectAttempt < WIFI_MAX_RECONNECT_ATTEMPTS)
-  {
-    Trace::log(TraceLevel::INFO, "Attempting to reconnect to WiFi...");
-    WiFi.disconnect();
+    Trace::log(TraceLevel::WARNING, "WiFi still disconnected, restarting connection");
     WiFi.begin(_ssid.c_str(), _password.c_str());
-    _wifiConnectStartTime = millis();
-    _reconnectAttempt++;
-
-    // Random jitter prevents synchronized reconnect storms across many devices.
-    const uint32_t jitter = static_cast<uint32_t>(
-      random(static_cast<long>(WIFI_RECONNECT_JITTER_MS) + 1L));
-    // Exponential backoff keeps network pressure low during outages.
-    const uint32_t reconnectDelayMs = ReconnectPolicy::computeDelayMs(
-        _reconnectAttempt, WIFI_RECONNECT_BASE_DELAY_MS,
-        WIFI_RECONNECT_MAX_DELAY_MS, jitter);
-    _lastAttemptTime = _wifiConnectStartTime;
-    _reconnectDelayMs = reconnectDelayMs;
-
-    Trace::logf(TraceLevel::DEBUG, "Next reconnect in ms: %lu",
-                static_cast<unsigned long>(reconnectDelayMs));
-  }
-  else
-  {
-    Trace::log(TraceLevel::ERROR,
-               "Max reconnection attempts reached");
-#if WIFI_RESTART_ON_RECONNECT_FAILURE
-    // Optional self-healing mode: hard reset after exhausting retries.
-    // Useful for unattended deployments that prefer automatic reboot cycles.
-    Trace::log(TraceLevel::WARNING, "Restarting due to reconnect policy");
-    delay(1000);
-    ESP.restart();
-#else
-    // Default diagnostics-first mode:
-    // Stay alive for serial/remote diagnostics and retry again later.
-    Trace::log(TraceLevel::WARNING,
-               "Keeping device alive for diagnostics (no forced restart)");
-    _lastAttemptTime = millis();
-    _reconnectDelayMs = WIFI_RECONNECT_MAX_DELAY_MS;
-    _reconnectAttempt = 0;
-#endif
+    _lastBeginMs = millis();
   }
 }

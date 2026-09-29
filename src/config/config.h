@@ -31,13 +31,9 @@ constexpr uint16_t OTA_PORT = 3232;
 #define DEVICE_NAME "water-tank-monitor"
 
 // WiFi configuration
-constexpr int WIFI_CONNECTION_TIMEOUT = 10000; // milliseconds
-constexpr uint8_t WIFI_MAX_RECONNECT_ATTEMPTS = 10;
-constexpr uint32_t WIFI_RECONNECT_BASE_DELAY_MS = 1000;
-constexpr uint32_t WIFI_RECONNECT_MAX_DELAY_MS = 30000;
-constexpr uint32_t WIFI_RECONNECT_JITTER_MS = 500;
-// Keep device alive for diagnostics instead of forced reboot
-#define WIFI_RESTART_ON_RECONNECT_FAILURE false
+// The SDK auto-reconnects; after this long without WiFi the firmware calls
+// WiFi.begin() again as a fallback (and repeats at this interval).
+constexpr uint32_t WIFI_FALLBACK_BEGIN_MS = 5UL * 60UL * 1000UL;
 
 // Application loop behavior
 constexpr uint32_t STATUS_PRINT_INTERVAL_MS = 30000;
